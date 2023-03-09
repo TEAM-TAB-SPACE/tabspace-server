@@ -111,9 +111,9 @@ class KakaoRegisterView(APIView) :
             print('login')
             return login(user, request) 
         except User.DoesNotExist:   
-                        
-            request.data['username'] = '1'+str(kakao_id)                 
-            serializer = serializers.UserRegisterSerializer(data=request.data)
+            request_data_copy = request.data.copy()            
+            request_data_copy['username'] = '1'+str(kakao_id)                 
+            serializer = serializers.UserRegisterSerializer(data=request_data_copy)
             
             serializer.is_valid(raise_exception=True)
             req_key = serializer.validated_data['secret_key']
@@ -122,7 +122,7 @@ class KakaoRegisterView(APIView) :
                 req_secret = SecretKey.objects.get(key=req_key)
                 
                 if serializer.validated_data['realname'] == req_secret.master and serializer.validated_data['phone'] == req_secret.phone and req_secret.active ==1:
-                    print('dd')
+        
                     print(serializer)
                     serializer.save()
                     req_secret.active = 0

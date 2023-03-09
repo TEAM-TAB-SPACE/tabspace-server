@@ -55,7 +55,8 @@ INSTALLED_APPS = [
 ]
 
 CRONJOBS = [
-    ('0 0 * * *', 'lectures.cron.update_today_lectures', '>> ./tmp/update_today_lectures.log')
+    ('0 0 1 * *', 'lectures.cron.update_monthly_lectures', '>> ./tmp/update_monthly_lectures.log'),
+    ('0 0 * * 1-5', 'lectures.cron.update_today_lectures', '>> ./tmp/update_today_lectures.log'),
 ]
 
 
