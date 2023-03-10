@@ -24,7 +24,7 @@ SECRET_KEY = secrets['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
+STATIC_ROOT = os.path.join(BASE_DIR, 'static') 
 ALLOWED_HOSTS = ['*']
 
 
