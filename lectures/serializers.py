@@ -1,9 +1,17 @@
 from rest_framework import serializers
-from .models import Lecture
+from .models import Lecture, LectureCategory
 
 
-class LectureSerializer(serializers.ModelSerializer):
+
+        
+class LectureCategorySerializer(serializers.ModelSerializer):
     
+    class Meta:
+        model = LectureCategory
+        fields = ('name',)
+        
+class LectureSerializer(serializers.ModelSerializer):
+    category = LectureCategorySerializer()
     class Meta:
         model = Lecture
         fields = '__all__'

@@ -1,7 +1,7 @@
 from django.shortcuts import render
 import pandas as pd
 import random
-from .models import Lecture
+from .models import Lecture, LectureCategory
 from django.http import HttpResponse, Http404
 from rest_framework.views    import APIView
 from rest_framework.response import Response
@@ -33,10 +33,11 @@ def dbCreateView(request):
 
     for i in range(0,len(db)):
         title = db['title'][i]
-        category = db['category'][i]
+        category_id = db['category'][i]
         teacher = db['teacher'][i]
         duration = db['duration'][i]
         videoId = db['videoId'][i]              
+        category=LectureCategory.objects.get(id=category_id)
         
         Lecture.objects.create(title=title, category=category, teacher=teacher, duration=duration,videoId=videoId)
     return HttpResponse('새로운 data가 저장되었습니다')  
@@ -62,9 +63,9 @@ def dbUpdateActiveView(request):
     return HttpResponse('오늘 강의가 업데이트 되었습니다')  
 
 def dbUpdateView(request):
-    for i in range(1,70):
+    for i in range(1,25):
         lecture = Lecture.objects.get(id=i)
-        lecture.active = 0
+        lecture.active_lecture = 1
         lecture.save()
 
     return HttpResponse('data가 수정되었습니다')  

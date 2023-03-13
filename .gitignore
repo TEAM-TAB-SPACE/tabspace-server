@@ -169,7 +169,7 @@ cython_debug/
 # Docker
 docker-compose.yml
 dockerfile
-lectures.csv
+*.csv
 
 # PyCharm
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can

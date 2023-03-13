@@ -12,6 +12,11 @@ class UserRegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         exclude = ('password',)
+class UserRegisterValidationSerializer(serializers.ModelSerializer):
+    # secret_key = UserSecretKeySerializer()
+    class Meta:
+        model = User
+        exclude = ('password','username')
         
 class UserSerializer(serializers.ModelSerializer):
     # secret_key = UserSecretKeySerializer()

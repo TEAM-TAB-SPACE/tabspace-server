@@ -4,7 +4,7 @@ from config import settings
 
 class Lecture(models.Model):
     title = models.CharField(max_length=100)
-    category = models.CharField(max_length=10)
+    category = models.ForeignKey('lectures.LectureCategory', on_delete=models.CASCADE)
     teacher = models.CharField(max_length=20)
     duration = models.PositiveIntegerField()
     videoId = models.CharField(max_length=100)
@@ -14,5 +14,7 @@ class Lecture(models.Model):
     def __str__(self):
         return self.title
 
-# 오늘 날짜랑 시간비교해서 active 여부 정하기
-# 평일 계산해서 넣기 
+class LectureCategory(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    def __str__(self):
+        return self.name

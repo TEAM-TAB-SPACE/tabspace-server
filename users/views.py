@@ -12,7 +12,9 @@ from django.utils import timezone
 from secretkeys.models import SecretKey
 from django.http import Http404
 from lecture_rooms.models import LectureRoom
-from lectures.models import Lecture
+from lectures.models import Lecture, LectureCategory
+from dashboards.models import Dashboard, UserGrowths
+from homeworks.models import Homework, Submission
 
 def get_tokens_for_user(user):
     
@@ -23,7 +25,7 @@ def get_tokens_for_user(user):
         'access': str(refresh.access_token),
     }
     
-def login(user, request):
+def login(user):
 
     tokens = get_tokens_for_user(user)
     res = Response()
@@ -91,7 +93,7 @@ class KaKaoSignInCallBackView(APIView):
             # auth_login(request,user)
             print('login')
             
-            return login(user, request)
+            return login(user)
             
         except User.DoesNotExist:
             # 기존에 가입된 유저가 없으면 400, 프론트에서 회원가입 post로 전환. post에 인가코드 필요
@@ -100,16 +102,15 @@ class KaKaoSignInCallBackView(APIView):
 class KakaoRegisterView(APIView) :
     
     def post(self, request):
-        kakao_id = kakao_access(request)
-                     
-        
+        kakao_id = kakao_access(request)             
+                             
         try:
             User.objects.get(username='1'+str(kakao_id))
             user = User.objects.get(username='1'+str(kakao_id))
             user.last_login = timezone.now()
             user.save()
             print('login')
-            return login(user, request) 
+            return login(user) 
         except User.DoesNotExist:   
             request_data_copy = request.data.copy()            
             request_data_copy['username'] = '1'+str(kakao_id)                 
@@ -129,9 +130,21 @@ class KakaoRegisterView(APIView) :
                     req_secret.save()
                     print(serializer.data['id'])
                     
-                    for lecture in Lecture.objects.all():
-                        LectureRoom.objects.create(user=User.objects.get(id=serializer.data['id']), lecture=lecture)
+                    user_id = serializer.data['id']
+                    user = User.objects.get(id=user_id)
+                    for lecture in Lecture.objects.all().order_by('id'):
+                        LectureRoom.objects.create(user=user, lecture=lecture)
                     
+                    Dashboard.objects.create(user=user)
+                    dashboard = Dashboard.objects.get(user_id = user_id)
+                    for lecture_category in LectureCategory.objects.all().order_by('id'):
+                        UserGrowths.objects.create(lecture_category=lecture_category, dashboard=dashboard)
+                    for homework in Homework.objects.all().order_by('id'):
+                        Submission.objects.create(dashboard=dashboard, homework=homework)
+                    
+                    user.last_login = timezone.now()
+                    user.save()
+                    login(user) 
                     return Response(data=serializer.validated_data, status=status.HTTP_201_CREATED)
                 elif serializer.validated_data['realname'] != req_secret.master: 
                     return Response(data='key user unmatched', status=status.HTTP_400_BAD_REQUEST)
@@ -164,3 +177,29 @@ class LogoutView(APIView):
             return res
         except:
             raise exceptions.ParseError("Invalid token")
+        
+        
+class KakaoRegisterValidationView(APIView) :
+    
+     def post(self, request):            
+                             
+                     
+        serializer = serializers.UserRegisterValidationSerializer(data=request.data)        
+        serializer.is_valid(raise_exception=True)
+        req_key = serializer.validated_data['secret_key']
+        print(req_key)
+        try: 
+            req_secret = SecretKey.objects.get(key=req_key)
+            
+            if serializer.validated_data['realname'] == req_secret.master and serializer.validated_data['phone'] == req_secret.phone and req_secret.active ==1:
+                return Response(data=serializer.validated_data, status=status.HTTP_200_OK)  
+            elif serializer.validated_data['realname'] != req_secret.master: 
+                return Response(data={"secret_key":['key user unmatched']}, status=status.HTTP_400_BAD_REQUEST)
+            elif serializer.validated_data['phone'] != req_secret.phone: 
+                return Response(data={"secret_key":['key phone unmatched']}, status=status.HTTP_400_BAD_REQUEST)
+            elif req_secret.active ==0: 
+                return Response(data={"secret_key":['inactive key']}, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except SecretKey.DoesNotExist:
+            return Response(data={"secret_key":['this key does not exist']}, status=status.HTTP_400_BAD_REQUEST)
