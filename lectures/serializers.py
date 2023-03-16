@@ -20,4 +20,4 @@ class DashboardLectureSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Lecture
-        fields = ('title',)
+        fields = ('title', 'videoId')

@@ -6,7 +6,7 @@ from .models import LectureComment, CommentReply
 
 
 
-class LectureCommentView(APIView):
+class LectureCommentsView(APIView):
     def get(self, request):
         try:
             if not 'lecture_id' in request.data:
@@ -19,13 +19,20 @@ class LectureCommentView(APIView):
             return Response(status=status.HTTP_200_OK,data=serializer.data)
         except LectureComment.DoesNotExist:
             return Response(status=status.HTTP_204_NO_CONTENT,data='no comments')
-        
-    # def post(self, request):
-    #     user_id = 9
-    #     data = request.data.copy()
-    #     data['user'] = user_id
-    #     serializer = CourseReviewSerializer(data=data)
-    #     serializer.is_valid(raise_exception=True)
-    #     serializer.save()
-    #     return Response(status=status.HTTP_201_CREATED,data=serializer.data)
+      
+class LectureCommentView(APIView):  
+    def post(self, request):
+        pass
+    def put(self,request):
+        pass
+    def delete(self,request):
+        pass
+    
+class CommentReplyView(APIView):  
+    def post(self, request):
+        pass
+    def put(self,request):
+        pass
+    def delete(self,request):
+        pass
         
