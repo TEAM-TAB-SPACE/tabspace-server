@@ -58,3 +58,6 @@ class LatestVideoView(APIView):
         except LectureRoom.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND,data='this lectureroom does not exist')
                 
+
+
+
