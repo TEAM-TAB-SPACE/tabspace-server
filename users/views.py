@@ -15,6 +15,8 @@ from lecture_rooms.models import LectureRoom
 from lectures.models import Lecture, LectureCategory
 from dashboards.models import Dashboard, UserGrowth
 from homeworks.models import Homework, Submission
+from rest_framework.settings import api_settings
+
 
 def get_tokens_for_user(user):
     
@@ -90,7 +92,7 @@ class KaKaoSignInCallBackView(APIView):
             print(user)
             user.last_login = timezone.now()
             user.save()
-            # auth_login(request,user)
+            
             print('login')
             
             return login(user)
@@ -98,6 +100,18 @@ class KaKaoSignInCallBackView(APIView):
         except User.DoesNotExist:
             # 기존에 가입된 유저가 없으면 400, 프론트에서 회원가입 post로 전환. post에 인가코드 필요
             return  Response(status=status.HTTP_404_NOT_FOUND, data='this user does not exist')
+
+
+class UserNameView(APIView):
+    def get(self, request):
+        try:
+            user_id = 9
+            user = User.objects.get(id=user_id)
+            serializer = serializers.UserSerializer(user)
+            return Response(data=serializer.data, status=status.HTTP_200_OK)  
+        except User.DoesNotExist:
+            return Response(data='This user does not exist', status=status.HTTP_404_NOT_FOUND)  
+                
     
 class KakaoRegisterView(APIView) :
     

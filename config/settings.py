@@ -38,7 +38,6 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     #유저 인증
-    "users.apps.UsersConfig",
     "rest_framework",
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
@@ -47,6 +46,7 @@ INSTALLED_APPS = [
     #기타
     'django_crontab',
     #앱
+    "users.apps.UsersConfig",
     'common.apps.CommonConfig',
     'secretkeys.apps.SecretkeysConfig',
     'lectures.apps.LecturesConfig',
@@ -63,6 +63,7 @@ INSTALLED_APPS = [
 CRONJOBS = [
     ('0 0 1 * *', 'lectures.cron.update_monthly_lectures', '>> /home/ubuntu/tabspace-server/cron_logs/update_monthly_lectures.log'),
     ('0 0 * * 1-5', 'lectures.cron.update_today_lectures', '>> /home/ubuntu/tabspace-server/cron_logs/update_today_lectures.log'),   
+    ('59 23 * * 1-5', 'dashboards.cron.update_user_attendance', '>> /home/ubuntu/tabspace-server/cron_logs/update_user_attendance.log'),   
     ('0 0 * * 6', 'lectures.cron.update_no_today_lectures', '>> /home/ubuntu/tabspace-server/cron_logs/update_no_today_lectures.log'),   
 ]
 

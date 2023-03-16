@@ -12,7 +12,7 @@ class Lecture(models.Model):
     today_lecture = models.BooleanField(default=False, null=False)
     active_lecture = models.BooleanField(default=False, null=False)
     def __str__(self):
-        return self.title
+        return f'{self.title}-{self.duration}'
 
 class LectureCategory(models.Model):
     name = models.CharField(max_length=50, unique=True)

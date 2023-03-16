@@ -10,6 +10,7 @@ from datetime import datetime
 import requests
 from dateutil.relativedelta import *
 from lectures.models import Lecture
+from lectures.serializers import DashboardLectureSerializer
 from lecture_rooms.models import LectureRoom
 from lecture_rooms.serializers import DashboardLectureRoomSerializer
 from .models import UserGrowth, Dashboard
@@ -39,5 +40,21 @@ class UserGrowthView(APIView):
             return Response(status=status.HTTP_200_OK,data=serializer.data)
         except Dashboard.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND,data='this dashboard does not exist')
+
+
+class LatestVideoView(APIView):
+    def get(self, request):
+        try:
+            user_id = 11
+            lecture_room = LectureRoom.objects.filter(user_id=user_id)
+            latest_lecture = lecture_room.latest('updated_at')
+            if latest_lecture.is_clicked==False:
+                return Response(status=status.HTTP_204_NO_CONTENT, data='수강한 강의가 없음')
+            latest_lecture = latest_lecture.lecture
+            print(latest_lecture)            
            
+            serializer= DashboardLectureSerializer(latest_lecture)
+            return Response(status=status.HTTP_200_OK,data=serializer.data)
+        except LectureRoom.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND,data='this lectureroom does not exist')
                 
