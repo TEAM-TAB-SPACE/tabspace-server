@@ -29,7 +29,7 @@ def update_user_attendance():
                 dashboard.save()
                 
             else:
-                print(user.id)
+            
                 dashboard = Dashboard.objects.get(user=user)
                 dashboard.attendance += '0'
                 dashboard.save()
