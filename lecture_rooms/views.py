@@ -17,7 +17,7 @@ from dateutil.relativedelta import *
 class LectureRoomsView(APIView):
     def get(self, request):
         try:
-            user_id = 5   #나중에 수정 
+            user_id = 9   #나중에 수정 
             lecture_rooms = LectureRoom.objects.filter(user=user_id)
             serializer = serializers.LectureRoomsSerializer(lecture_rooms, many=True)
             return Response(status=status.HTTP_200_OK,data=serializer.data)
@@ -32,7 +32,7 @@ class LectureRoomsView(APIView):
                 raise exceptions.ParseError('error: there is no data to be updated')
             
             lecture_room = LectureRoom.objects.get(id=request.data['id'])
-            if lecture_room.user_id != 5: #나중에 수정 
+            if lecture_room.user_id != 9: #나중에 수정 
                 raise exceptions.PermissionDenied('This user do not have permission of this lectureroom')
             serializer = serializers.LectureRoomSerializer(lecture_room, request.data, partial=True)
             serializer.is_valid(raise_exception=True)

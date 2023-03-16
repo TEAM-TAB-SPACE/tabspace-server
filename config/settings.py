@@ -53,14 +53,17 @@ INSTALLED_APPS = [
     'lecture_rooms.apps.LectureRoomsConfig',
     'dashboards.apps.DashboardsConfig',
     'homeworks.apps.HomeworksConfig',
+    'course_reviews.apps.CourseReviewsConfig',
+    'lecture_comments.apps.LectureCommentsConfig',
     #저장소
     'storages',
     
 ]
 
 CRONJOBS = [
-    ('0 0 1 * *', 'lectures.cron.update_monthly_lectures', '>> ./tmp/update_monthly_lectures.log'),
-    ('0 0 * * 1-5', 'lectures.cron.update_today_lectures', '>> ./tmp/update_today_lectures.log'),
+    ('0 0 1 * *', 'lectures.cron.update_monthly_lectures', '>> /home/ubuntu/tabspace-server/cron_logs/update_monthly_lectures.log'),
+    ('0 0 * * 1-5', 'lectures.cron.update_today_lectures', '>> /home/ubuntu/tabspace-server/cron_logs/update_today_lectures.log'),   
+    ('0 0 * * 6', 'lectures.cron.update_no_today_lectures', '>> /home/ubuntu/tabspace-server/cron_logs/update_no_today_lectures.log'),   
 ]
 
 
@@ -260,5 +263,5 @@ AWS_S3_CUSTOM_DOMAIN = '%s.s3.%s.amazonaws.com' % (AWS_STORAGE_BUCKET_NAME,AWS_R
 AWS_S3_OBJECT_PARAMETERS = {
     'CacheControl': 'max-age=86400',
 }
-DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'path/to/store/my/files/')
+DEFAULT_FILE_STORAGE = 'config.utils.CustomS3Boto3Storage'
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'path/to/store/my/files/')

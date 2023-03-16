@@ -169,7 +169,12 @@ cython_debug/
 # Docker
 docker-compose.yml
 dockerfile
+# data
 *.csv
+#deploy
+uwsgi.sock
+uwsgi.ini
+cron_logs/
 
 # PyCharm
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can

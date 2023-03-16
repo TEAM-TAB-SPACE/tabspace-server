@@ -5,15 +5,34 @@ from dateutil.relativedelta import *
 
 
 def update_today_lectures():
-    Lecture.objects.filter(today_lecture = 1).update(today_lecture = 0) #어제의 today값 수정
-    
+    try:
+        Lecture.objects.filter(today_lecture = 1).update(today_lecture = 0) #어제의 today값 수정
+    except:
+        print('There is no today lecture yesterday')
     now = datetime.now()
     now = now.strftime('%Y%m%d')
     try:
         Lecture.objects.filter(date=now).update(today_lecture = 1, active_lecture = 1) #오늘날짜와 date가 일치하는 강의 리스트 = 오늘의 강의
+        print(f"{datetime.now()}:today's lecture updated")
+        
     except:
-        print(f'{datetime.now()}:오늘 날짜에 일치하는 강의 없음')   
-    print(f'{datetime.now()}:오늘의 강의 업데이트 완료')
+        print(f"{datetime.now()}:there is no today's lecture")   
+    
+def update_no_today_lectures():
+    try:
+        Lecture.objects.filter(today_lecture = 1).update(today_lecture = 0) #어제의 today값 수정
+        print(f"{datetime.now()}:today's lecture updated")
+
+    except:
+        print(f"{datetime.now()}:there is no today's lecture")   
+        
+# def update_no_today_lectures():
+#     try:
+#         Lecture.objects.filter(today_lecture = 1).update(today_lecture = 0) 
+#         print(f"{datetime.now()}:today's lecture updated")
+
+#     except:
+#         print(f"{datetime.now()}:there is no today's lecture")   
     
 def update_monthly_lectures():
     today = datetime.today()
@@ -83,5 +102,8 @@ def update_monthly_lectures():
         now = now.strftime('%Y%m%d')
         Lecture.objects.filter(date=now).update(today_lecture = 1, active_lecture = 1)
     except:
-        print(f'{datetime.now()}:이번달 강의 날짜 업데이트 완료, 오늘 날짜에 일치하는 강의 없음')
-    print(f'{datetime.now()}:이번달 강의 날짜 업데이트 완료')
+        print(f'{datetime.now()}:monthly lecture updated, but there is no lecture today')
+    print(f'{datetime.now()}:monthly lecture updated')
+    
+def test():
+    print('test')

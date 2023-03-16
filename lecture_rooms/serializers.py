@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import LectureRoom
-from lectures.serializers import LectureSerializer
+from lectures.serializers import LectureSerializer, DashboardLectureSerializer
 
 
 class LectureRoomsSerializer(serializers.ModelSerializer):
@@ -16,4 +16,8 @@ class LectureRoomSerializer(serializers.ModelSerializer):
         model = LectureRoom
         fields = ('playtime','is_clicked','completed')
         
-        
+class DashboardLectureRoomSerializer(serializers.ModelSerializer):
+    lecture = DashboardLectureSerializer()
+    class Meta:
+        model = LectureRoom
+        fields = ('lecture','progress','completed',)

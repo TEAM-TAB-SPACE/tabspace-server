@@ -13,7 +13,7 @@ from secretkeys.models import SecretKey
 from django.http import Http404
 from lecture_rooms.models import LectureRoom
 from lectures.models import Lecture, LectureCategory
-from dashboards.models import Dashboard, UserGrowths
+from dashboards.models import Dashboard, UserGrowth
 from homeworks.models import Homework, Submission
 
 def get_tokens_for_user(user):
@@ -102,6 +102,7 @@ class KaKaoSignInCallBackView(APIView):
 class KakaoRegisterView(APIView) :
     
     def post(self, request):
+                    
         kakao_id = kakao_access(request)             
                              
         try:
@@ -138,7 +139,7 @@ class KakaoRegisterView(APIView) :
                     Dashboard.objects.create(user=user)
                     dashboard = Dashboard.objects.get(user_id = user_id)
                     for lecture_category in LectureCategory.objects.all().order_by('id'):
-                        UserGrowths.objects.create(lecture_category=lecture_category, dashboard=dashboard)
+                        UserGrowth.objects.create(lecture_category=lecture_category, dashboard=dashboard)
                     for homework in Homework.objects.all().order_by('id'):
                         Submission.objects.create(dashboard=dashboard, homework=homework)
                     
