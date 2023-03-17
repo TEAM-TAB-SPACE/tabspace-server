@@ -2,6 +2,7 @@ from .models import Lecture
 from datetime import datetime
 import requests
 from dateutil.relativedelta import *
+from weekdays.models import Weekday
 
 
 def update_today_lectures():
@@ -28,16 +29,11 @@ def update_no_today_lectures():
     except:
         print(f"{datetime.now()}:there is no today's lecture")   
     
-        
-# def update_no_today_lectures():
-#     try:
-#         Lecture.objects.filter(today_lecture = 1).update(today_lecture = 0) 
-#         print(f"{datetime.now()}:today's lecture updated")
 
-#     except:
-#         print(f"{datetime.now()}:there is no today's lecture")   
     
 def update_monthly_lectures():
+    #이번달 공휴일 계산
+    
     today = datetime.today()
     this_year = today.year
     this_month = today.month
@@ -59,19 +55,21 @@ def update_monthly_lectures():
         except:
             holidays_data = response['response']['body']['items']['item']
             holidays.append(str(holidays_data['locdate']))
-    # print(holidays)
+    
 
 
     next_month = datetime(this_year, this_month, 1) + relativedelta(months=1)
     this_month_last = next_month + relativedelta(seconds=-1)
     this_month_last_day = this_month_last.strftime('%d')
     days = []
-
+    weekdays = ''
 
     for i in range(1, int(this_month_last_day)):
         day = datetime(this_year,this_month,i).weekday()
         
         if day!=5 and day!=6:
+            weekdays += f'{i},'  # for weekdays app
+            
             if len(str(i)) == 1:
                 d = '0'+str(i)
             else : 
@@ -79,8 +77,28 @@ def update_monthly_lectures():
             day_temp = f'{this_year}{m}{d}'
             if day_temp not in holidays:
                 days.append(day_temp)
+                
+    # for weekdays app
+    weekdays = weekdays[:-1]
+    
+    holidays2 = ''
+    for holiday in holidays:
+        
+        if holiday[-2] == '0':
+            holidays2 += f'{holiday[-1]},'
+        else:
+            holidays2 += f'{holiday[-2:]},'
+    holidays2 = holidays2[:-1]
+    
+    weekday = Weekday.objects.last()
+    weekday.month=this_month
+    weekday.days=weekdays
+    weekday.korean_holidays=holidays2
+    weekday.save()
+    
+    
             
-
+    # for lectures app
     lecture_num = len(Lecture.objects.all())
     lecture_days = []
     if lecture_num%(3*len(days)) == 0:

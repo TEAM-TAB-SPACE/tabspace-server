@@ -1,7 +1,7 @@
 from django.shortcuts import render
 import pandas as pd
 import random
-from .models import Homework, Submission
+from .models import Homework, Submission, Storage
 from django.http import HttpResponse, Http404
 from rest_framework.views    import APIView
 from rest_framework.response import Response
@@ -29,25 +29,39 @@ class SubmissionView(APIView):
     def post(self, request):
         try:
             if not 'id' in request.data:
-                raise exceptions.ParseError('error:"id" is required')
+                raise exceptions.ParseError('error:"id" is required')   #submission id
             if len(request.data)==1:
+                raise exceptions.ParseError('error: there is no data to be updated')
+            print(request.data['file'])
+            if request.data['file'] == '':
                 raise exceptions.ParseError('error: there is no data to be updated')
             
             submission = Submission.objects.get(id=request.data['id'])
             dashboard_id = submission.dashboard_id
             user_id = Dashboard.objects.get(id=dashboard_id).user_id
+            
+            
+            
+            
             if user_id != 9: #나중에 수정 
                 raise exceptions.PermissionDenied('This user do not have permission of this submission')
-            serializer = serializers.SubmissionSerializer(submission, request.data, partial=True)
-            serializer.is_valid(raise_exception=True)
-            s3 = boto3.client('s3')
-            file = serializer.validated_data['file']
-            s3.upload_file(f'{request.data["file"]}',
-                   settings.AWS_STORAGE_BUCKET_NAME,
-                   f'{user_id}/{file}')
-            serializer.save()
+            file_serializer = serializers.StorageFileSerializer(submission, request.data, partial=True)
+            file_serializer.is_valid(raise_exception=True)            
             
-            return Response(data=request.data, status=status.HTTP_206_PARTIAL_CONTENT)
+            s3 = boto3.client('s3')            
+            now = datetime.now()
+            now = now.strftime('%Y%m%d_%H%M%S')
+            s3.upload_fileobj(file_serializer.validated_data['file'], settings.AWS_STORAGE_BUCKET_NAME, f'{user_id}/{submission.id}/{now}_'+file_serializer.validated_data['file'].name)
+           
+            s3_url = f"{settings.AWS_S3_CUSTOM_DOMAIN}/{user_id}/{submission.id}/{now}_{file_serializer.validated_data['file'].name}"
+            
+            
+            Storage.objects.create(submission = submission, url = s3_url)
+            
+            if submission.is_submitted == False:
+                submission.is_submitted = True
+                submission.save()
+            return Response(status=status.HTTP_201_CREATED, data="homework submitted successfully")
         except Submission.DoesNotExist:
             return Response(data='This submission does not exist', status=status.HTTP_404_NOT_FOUND)
 

@@ -9,3 +9,10 @@ class UserGrowthsSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserGrowth
         fields = '__all__'
+        
+        
+class AttendanceSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Dashboard
+        fields = ('attendance', )

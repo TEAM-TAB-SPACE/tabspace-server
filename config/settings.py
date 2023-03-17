@@ -17,7 +17,7 @@ for key, value in secrets.items():
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = secrets['SECRET_KEY']
 
-
+KOREAN_API_KEY = secrets["serviceKey"]
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'homeworks.apps.HomeworksConfig',
     'course_reviews.apps.CourseReviewsConfig',
     'lecture_comments.apps.LectureCommentsConfig',
+    'weekdays.apps.WeekdaysConfig',
     #저장소
     'storages',
     
