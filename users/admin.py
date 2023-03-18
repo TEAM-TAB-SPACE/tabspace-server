@@ -21,7 +21,7 @@ class CustomUserAdmin(UserAdmin):
 	# 	},
 	# ),
 	("Important Dates", {
-			"fields": ("last_login", "date_joined"),
+			"fields": ("last_login", "date_joined", "uuid"),
 			"classes": ("collapse",),   #접었다폈다
 		},
 	),

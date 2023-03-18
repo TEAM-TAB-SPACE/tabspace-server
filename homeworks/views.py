@@ -13,6 +13,7 @@ from . import serializers
 from dashboards.models import Dashboard
 import boto3
 from config import settings
+from users.models import User
 
 
 class SubmissionView(APIView):
@@ -28,6 +29,7 @@ class SubmissionView(APIView):
         
     def post(self, request):
         try:
+            user_id = 9  
             if not 'id' in request.data:
                 raise exceptions.ParseError('error:"id" is required')   #submission id
             if len(request.data)==1:
@@ -38,19 +40,19 @@ class SubmissionView(APIView):
             
             submission = Submission.objects.get(id=request.data['id'])
             dashboard_id = submission.dashboard_id
-            user_id = Dashboard.objects.get(id=dashboard_id).user_id           
-            
-            if user_id != 9: #나중에 수정 
-                raise exceptions.PermissionDenied('This user do not have permission of this submission')
+            # user_id = Dashboard.objects.get(id=dashboard_id).user_id           
+            user_uuid = User.objects.get(id=user_id).uuid
+            # if user_id != 9: #나중에 수정 
+            #     raise exceptions.PermissionDenied('This user do not have permission of this submission')
             file_serializer = serializers.StorageFileSerializer(submission, request.data, partial=True)
             file_serializer.is_valid(raise_exception=True)            
             
             s3 = boto3.client('s3')            
             now = datetime.now()
             now = now.strftime('%Y%m%d_%H%M%S')
-            s3.upload_fileobj(file_serializer.validated_data['file'], settings.AWS_STORAGE_BUCKET_NAME, f'{user_id}/{submission.id}/{now}_'+file_serializer.validated_data['file'].name)
+            s3.upload_fileobj(file_serializer.validated_data['file'], settings.AWS_STORAGE_BUCKET_NAME, f'{user_uuid}/{submission.id}/{now}_'+file_serializer.validated_data['file'].name)
            
-            s3_url = f"{settings.AWS_S3_CUSTOM_DOMAIN}/{user_id}/{submission.id}/{now}_{file_serializer.validated_data['file'].name}"
+            s3_url = f"{settings.CLOUDFRONT}/{user_uuid}/{submission.id}/{now}_{file_serializer.validated_data['file'].name}"
             
             
             Storage.objects.create(submission = submission, url = s3_url)
