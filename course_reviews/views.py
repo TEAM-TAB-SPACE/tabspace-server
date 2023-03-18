@@ -5,7 +5,7 @@ from .serializers import CourseReviewSerializer
 from .models import CourseReview
 
 
-class CoursereviewViewSet(APIView):
+class CourseReviewView(APIView):
     def post(self, request):
         user_id = 9
         data = request.data.copy()

@@ -38,10 +38,7 @@ class SubmissionView(APIView):
             
             submission = Submission.objects.get(id=request.data['id'])
             dashboard_id = submission.dashboard_id
-            user_id = Dashboard.objects.get(id=dashboard_id).user_id
-            
-            
-            
+            user_id = Dashboard.objects.get(id=dashboard_id).user_id           
             
             if user_id != 9: #나중에 수정 
                 raise exceptions.PermissionDenied('This user do not have permission of this submission')
@@ -65,7 +62,22 @@ class SubmissionView(APIView):
         except Submission.DoesNotExist:
             return Response(data='This submission does not exist', status=status.HTTP_404_NOT_FOUND)
 
-
+    def delete(self, request):
+        try:
+            if not 'id' in request.data:
+                raise exceptions.ParseError('error:"id" is required') #storageId
+            else:
+                storage = Storage.objects.get(id=request.data["id"])
+                storage_file_name = "/".join(storage.url.split('/')[-3:])
+                print(storage_file_name)
+                s3 = boto3.client('s3')            
+                s3.delete_object(Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=storage_file_name)
+                storage.delete()
+                
+                return Response(data='storage deleted', status=status.HTTP_200_OK)
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+            
 """
 db값 추가
 """

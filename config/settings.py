@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'course_reviews.apps.CourseReviewsConfig',
     'lecture_comments.apps.LectureCommentsConfig',
     'weekdays.apps.WeekdaysConfig',
+    'appliers.apps.AppliersConfig',
     #저장소
     'storages',
     

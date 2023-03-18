@@ -2,6 +2,6 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('review', views.CourseReviewView.as_view())
+    path('info', views.ApplierView.as_view())
 
 ]
