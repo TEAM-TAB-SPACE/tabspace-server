@@ -14,7 +14,7 @@ from lectures.serializers import DashboardLectureSerializer
 from lecture_rooms.models import LectureRoom
 from lecture_rooms.serializers import DashboardLectureRoomSerializer
 from .models import UserGrowth, Dashboard
-from .serializers import AttendanceSerializer
+from .serializers import AttendanceSerializer, AdminAttendanceSerializer, AdminHomeworkSerializer
 
 class TodayLectureView(APIView):
     def get(self, request):
@@ -69,6 +69,22 @@ class AttendanceView(APIView):
         except Dashboard.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND,data='this dashboard does not exist')
                 
+### admin page views
 
+class AdminAttendanceView(APIView):
+    def get(self, request):
+        try:
+            dashboard = Dashboard.objects.all()        
+            serializer= AdminAttendanceSerializer(dashboard, many=True)
+            return Response(status=status.HTTP_200_OK,data=serializer.data)
+        except Dashboard.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND,data='dashboard does not exist')
 
-
+class AdminHomeworkView(APIView):
+    def get(self, request):
+        try:
+            dashboard = Dashboard.objects.all() 
+            serializer= AdminHomeworkSerializer(dashboard, many=True)
+            return Response(status=status.HTTP_200_OK,data=serializer.data)
+        except Dashboard.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND,data='dashboard does not exist')

@@ -7,8 +7,8 @@ class Homework(models.Model):
         return self.title
 
 class Submission(CommonModel):
-    dashboard = models.ForeignKey('dashboards.Dashboard', on_delete=models.CASCADE)
-    homework = models.ForeignKey('homeworks.Homework', on_delete=models.CASCADE)
+    dashboard = models.ForeignKey('dashboards.Dashboard', on_delete=models.CASCADE, related_name='submission')
+    homework = models.ForeignKey('homeworks.Homework', on_delete=models.CASCADE, related_name='submission')
     is_submitted = models.BooleanField(default=False, blank=False, null=False)
     # url = models.CharField(max_length=100, null=True, blank=True)
     # file = models.FileField(null=True, blank=True)

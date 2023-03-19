@@ -30,4 +30,9 @@ class SubmissionSerializer(serializers.ModelSerializer):
         fields = ('id', 'homework', 'is_submitted', 'storages')
         
 
-        
+class AdminSubmissionSerializer(serializers.ModelSerializer):
+    homework = HomeworkSerializer()
+    storages = StorageSerializer(many = True)
+    class Meta:
+        model = Submission
+        fields = ('id', 'homework', 'is_submitted', 'storages')

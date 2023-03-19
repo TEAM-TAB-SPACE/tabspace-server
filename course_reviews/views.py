@@ -15,3 +15,9 @@ class CourseReviewView(APIView):
         serializer.save()
         return Response(status=status.HTTP_201_CREATED,data=serializer.data)
         
+class AdminCourseReviewsView(APIView):
+    def get(self, request):
+        reviews=CourseReview.objects.all()
+        serializer = CourseReviewSerializer(reviews, many=True)
+        
+        return Response(status=status.HTTP_200_OK,data=serializer.data)
