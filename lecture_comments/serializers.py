@@ -4,16 +4,27 @@ from users.serializers import UserSerializer
 
 
         
-class CommentReplySerializer(serializers.ModelSerializer):
+class CommentRepliesSerializer(serializers.ModelSerializer):
     user = UserSerializer()
     
     class Meta:
         model = CommentReply
-        fields = ('user','reply')
+        fields = ('id','user','reply')
         
-class LectureCommentSerializer(serializers.ModelSerializer):
+class LectureCommentReplySerializer(serializers.ModelSerializer):
     user = UserSerializer()
-    replies = CommentReplySerializer(many=True)
+    replies = CommentRepliesSerializer(many=True)
     class Meta:
         model = LectureComment
-        fields = ('user','comment','replies')
+        fields = ('id','user','comment','replies')
+        
+class LectureCommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LectureComment
+        fields = '__all__'
+
+class CommentReplySerializer(serializers.ModelSerializer):    
+    
+    class Meta:
+        model = CommentReply
+        fields = '__all__'

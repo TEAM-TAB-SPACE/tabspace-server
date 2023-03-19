@@ -16,7 +16,7 @@ class LectureComment(CommonModel):
         "lectures.Lecture",
         on_delete=models.CASCADE
     )
-    comment = models.TextField()
+    comment = models.TextField(max_length=1000)
     
 
 
@@ -41,5 +41,5 @@ class CommentReply(CommonModel):
         related_name="replies"
     )
     
-    reply = models.TextField()
+    reply = models.TextField(max_length=1000)
     
