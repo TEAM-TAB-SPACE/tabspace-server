@@ -3,7 +3,8 @@ from django.db import models
 class Dashboard(models.Model):
     user = models.ForeignKey('users.User', on_delete=models.CASCADE)
     attendance = models.CharField(max_length=50, blank=True, null=True)
-    homework_progress = models.PositiveIntegerField(default=0, null=False)
+    notifications = models.TextField(max_length=1000, blank=True, null=True)
+    # homework_progress = models.PositiveIntegerField(default=0, null=False)
     # latest_lecture = models.CharField(max_length=100, blank=True, null=True)
     
 class UserGrowth(models.Model):

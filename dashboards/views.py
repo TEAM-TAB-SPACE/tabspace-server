@@ -16,6 +16,7 @@ from lecture_rooms.serializers import DashboardLectureRoomSerializer
 from .models import UserGrowth, Dashboard
 from .serializers import AttendanceSerializer, AdminAttendanceSerializer, AdminHomeworkSerializer
 
+
 class TodayLectureView(APIView):
     def get(self, request):
         try:
@@ -88,3 +89,5 @@ class AdminHomeworkView(APIView):
             return Response(status=status.HTTP_200_OK,data=serializer.data)
         except Dashboard.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND,data='dashboard does not exist')
+        
+        

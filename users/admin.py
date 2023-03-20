@@ -27,12 +27,12 @@ class CustomUserAdmin(UserAdmin):
 	),
 )
     list_display = ("id","realname","username", "is_superuser","is_staff")
-    list_filter = ("is_superuser", "realname",)
+    list_filter = ("is_superuser", "realname","is_staff")
     search_fields = ("username","realname","phone","email","secret_key",)
     ordering = ("id",)
-    filter_horizontal = (
-        "groups",
-        "user_permissions",
-    )
+    # filter_horizontal = (
+    #     "groups",
+    #     "user_permissions",
+    # )
 	
     readonly_fields = ("date_joined", "last_login",)

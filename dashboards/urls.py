@@ -9,5 +9,6 @@ urlpatterns = [
     path('admin/attendances',views.AdminAttendanceView.as_view()),
     path('admin/homeworks',views.AdminHomeworkView.as_view()),
     
+    
 
 ]

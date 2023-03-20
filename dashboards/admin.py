@@ -3,7 +3,7 @@ from .models import Dashboard, UserGrowth
 
 @admin.register(Dashboard)
 class DashboardAdmin(admin.ModelAdmin):  
-    list_display = ("id", "user","attendance", "homework_progress",)
+    list_display = ("id", "user","attendance",)
     list_filter = ("user",)
     search_fields = ("user",)
     ordering = ("id",)
