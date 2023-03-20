@@ -18,6 +18,12 @@ class AttendanceSerializer(serializers.ModelSerializer):
         model = Dashboard
         fields = ('attendance', )
         
+class NotificationSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Dashboard
+        fields = ('notifications', )
+        
 class AdminAttendanceSerializer(serializers.ModelSerializer):
     user = UserSerializer()
     class Meta:
