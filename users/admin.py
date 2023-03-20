@@ -11,22 +11,22 @@ class CustomUserAdmin(UserAdmin):
 			"classes": ("wide",),
 		},
 	),
-	# ("Permissions",{
-	# 		"fields": (
-	# 			"is_active",
-	# 			"is_staff",
-	# 			"is_superuser",
-	# 			"user_permissions",
-	# 		),
-	# 	},
-	# ),
+	("Permissions",{
+			"fields": (
+				"is_active",
+				"is_staff",
+				"is_superuser",
+				# "user_permissions",
+			),
+		},
+	),
 	("Important Dates", {
-			"fields": ("last_login", "date_joined", "uuid"),
+			"fields": ("password","last_login", "date_joined", "uuid"),
 			"classes": ("collapse",),   #접었다폈다
 		},
 	),
 )
-    list_display = ("id","realname","username", "is_superuser",)
+    list_display = ("id","realname","username", "is_superuser","is_staff")
     list_filter = ("is_superuser", "realname",)
     search_fields = ("username","realname","phone","email","secret_key",)
     ordering = ("id",)
@@ -35,4 +35,4 @@ class CustomUserAdmin(UserAdmin):
         "user_permissions",
     )
 	
-    readonly_fields = ("username", "date_joined", "last_login",)
+    readonly_fields = ("date_joined", "last_login",)

@@ -16,6 +16,7 @@ from lectures.models import Lecture, LectureCategory
 from dashboards.models import Dashboard, UserGrowth
 from homeworks.models import Homework, Submission
 from rest_framework.settings import api_settings
+from django.contrib.auth import authenticate
 
 
 def get_tokens_for_user(user):
@@ -171,8 +172,8 @@ class KakaoRegisterView(APIView) :
                     return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             except SecretKey.DoesNotExist:
                 return Response(data='this key does not exist', status=status.HTTP_400_BAD_REQUEST)
-                
-                
+             
+               
 @decorators.permission_classes([permissions.IsAuthenticated])
 class LogoutView(APIView):
     def post(self, request):
@@ -196,9 +197,7 @@ class LogoutView(APIView):
         
 class KakaoRegisterValidationView(APIView) :
     
-     def post(self, request):            
-                             
-                     
+     def post(self, request):                
         serializer = serializers.UserRegisterValidationSerializer(data=request.data)        
         serializer.is_valid(raise_exception=True)
         req_key = serializer.validated_data['secret_key']
@@ -218,3 +217,24 @@ class KakaoRegisterValidationView(APIView) :
                 return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except SecretKey.DoesNotExist:
             return Response(data={"secret_key":['this key does not exist']}, status=status.HTTP_400_BAD_REQUEST)
+        
+        
+"""
+admin page login
+"""
+class StaffLoginView(APIView):
+    def post(self, request):
+        try: 
+            if not 'username' in request.data or not 'password' in request.data:
+                raise exceptions.ParseError('username and password are required')
+            user = authenticate(username=request.data['username'], password=request.data['password'])
+            if user is None:
+                return Response(data='username or password is invalid', status=status.HTTP_400_BAD_REQUEST)
+            user = User.objects.get(username = request.data['username'], is_staff = True)
+            user.last_login = timezone.now()
+            user.save()
+            print('login')
+            return login(user)
+            
+        except User.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)

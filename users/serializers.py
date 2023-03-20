@@ -23,3 +23,9 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('realname',)
+        
+class StaffloginSerializer(serializers.ModelSerializer):
+    # secret_key = UserSecretKeySerializer()
+    class Meta:
+        model = User
+        fields = ('username','password',)

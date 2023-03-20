@@ -14,6 +14,7 @@ urlpatterns = [
     path("username", views.UserNameView.as_view()),
     path("register/validation", views.KakaoRegisterValidationView.as_view()),
     path('register',views.KakaoRegisterView.as_view()),
-    path('logout', views.LogoutView.as_view())
+    path('logout', views.LogoutView.as_view()),
+    path('admin/login', views.StaffLoginView.as_view()),
     
 ]
