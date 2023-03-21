@@ -18,6 +18,7 @@ for key, value in secrets.items():
 SECRET_KEY = secrets['SECRET_KEY']
 CLOUDFRONT = secrets['cloudfront']
 KOREAN_API_KEY = secrets["serviceKey"]
+KAKAO_REST_API_KEY = secrets["kakao_rest_api_key"]
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 

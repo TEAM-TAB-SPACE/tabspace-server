@@ -15,7 +15,6 @@ from lecture_rooms.models import LectureRoom
 from lectures.models import Lecture, LectureCategory
 from dashboards.models import Dashboard, UserGrowth
 from homeworks.models import Homework, Submission
-from rest_framework.settings import api_settings
 from django.contrib.auth import authenticate
 
 
@@ -59,7 +58,7 @@ def kakao_access(request):
     kakao_token_api = 'https://kauth.kakao.com/oauth/token'
     data = {
         'grant_type': 'authorization_code',
-        'client_id': '2e1bc15f48ecb56bf87feef6738933b9',
+        'client_id': settings.KAKAO_REST_API_KEY,
         'redirection_uri': 'http://localhost:3000/oauth/callback/kakao',
         'code': auth_code
     }
