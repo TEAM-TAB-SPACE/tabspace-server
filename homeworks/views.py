@@ -75,7 +75,12 @@ class SubmissionView(APIView):
                 s3 = boto3.client('s3')            
                 s3.delete_object(Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=storage_file_name)
                 storage.delete()
-                
+                try:
+                    Storage.objects.get(submission=storage.submission_id)
+                except Storage.DoesNotExist:
+                    submission = Submission.objects.get(id=storage.submission_id) 
+                    submission.is_submitted = 0
+                    submission.save()  
                 return Response(data='storage deleted', status=status.HTTP_200_OK)
         except Storage.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND, data='this storage dose not exist')
