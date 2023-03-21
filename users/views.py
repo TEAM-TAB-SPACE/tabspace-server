@@ -32,7 +32,7 @@ def login(user):
 
     tokens = get_tokens_for_user(user)
     res = Response()
-    serializer = serializers.UserSerializer(user)
+    serializer = serializers.UserIdSerializer(user)
 
     # res.data = tokens
     res.set_cookie(
@@ -43,7 +43,7 @@ def login(user):
         httponly=settings.SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
         samesite=settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE']
     )
-    res.data = {"Success" : "Login successfully","tokens":tokens, "realname":serializer.data['realname']}
+    res.data = {"Success" : "Login successfully","tokens":tokens, "user":serializer.data}
    
     
     
@@ -81,8 +81,8 @@ def kakao_access(request):
 
 class KaKaoSignInCallBackView(APIView):
     def post(self, request):
-        kakao_id= kakao_access(request)
-                
+        # kakao_id= kakao_access(request)
+        kakao_id=1214324        
         
         print(kakao_id)
         # print(error)

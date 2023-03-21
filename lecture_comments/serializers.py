@@ -1,18 +1,18 @@
 from rest_framework import serializers
 from .models import LectureComment,CommentReply
-from users.serializers import UserSerializer
+from users.serializers import UserIdSerializer
 from django.db import models
 
         
 class CommentRepliesSerializer(serializers.ModelSerializer):
-    user = UserSerializer()
+    user = UserIdSerializer()
     
     class Meta:
         model = CommentReply
         fields = ('id','user','comment')
         
 class LectureCommentReplySerializer(serializers.ModelSerializer):
-    user = UserSerializer()
+    user = UserIdSerializer()
     replies = CommentRepliesSerializer(many=True)
     
     class Meta:
