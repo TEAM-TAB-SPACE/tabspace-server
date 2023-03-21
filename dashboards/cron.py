@@ -97,7 +97,7 @@ def update_user_notifications():
         if dashboard.attendance[-1] == '0':  #전날 결석일 때 알림
             msg.append(f'{user_name}님 돌아오셨군요 ! 오늘은 열심히 저와 함께 달려보아요 ! ₍₍ (ง ˘ω˘ )ว ⁾⁾')
             if dashboard.attendance.count('0') >= 1:
-                msg.append(f'총 {dashboard.attendance.split().count("0")}번 결석하셨어요. 결석이 3번 이상이면 불이익이 발생할 수 있어요 ( ఠ్ఠ ˓̭ ఠ్ఠ )')            
+                msg.append(f'총 {dashboard.attendance.count("0")}번 결석하셨어요. 결석이 3번 이상이면 불이익이 발생할 수 있어요 ( ఠ్ఠ ˓̭ ఠ్ఠ )')            
         elif not '0' in dashboard.attendance:
             msg.append(f'{user_name}님의 성실함이 눈부셔요 !! 이대로만 계속 가요 ദ്ദിㆁᴗㆁ✿)')           
         

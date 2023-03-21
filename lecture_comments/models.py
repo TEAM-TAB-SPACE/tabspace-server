@@ -35,11 +35,11 @@ class CommentReply(CommonModel):
         related_name="replies"
     )
     
-    comment = models.ForeignKey(
+    lecture_comment = models.ForeignKey(
         "lecture_comments.LectureComment",
         on_delete=models.CASCADE,
         related_name="replies"
     )
     
-    reply = models.TextField(max_length=1000)
+    comment = models.CharField(max_length=255)
     

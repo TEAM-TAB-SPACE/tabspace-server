@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import LectureComment,CommentReply
 from users.serializers import UserSerializer
-
+from django.db import models
 
         
 class CommentRepliesSerializer(serializers.ModelSerializer):
@@ -9,11 +9,12 @@ class CommentRepliesSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = CommentReply
-        fields = ('id','user','reply')
+        fields = ('id','user','comment')
         
 class LectureCommentReplySerializer(serializers.ModelSerializer):
     user = UserSerializer()
     replies = CommentRepliesSerializer(many=True)
+    
     class Meta:
         model = LectureComment
         fields = ('id','user','comment','replies')
