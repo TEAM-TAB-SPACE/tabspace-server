@@ -14,6 +14,7 @@ from dashboards.models import Dashboard
 import boto3
 from config import settings
 from users.models import User
+from django.db import transaction
 
 
 class SubmissionView(APIView):
@@ -69,6 +70,7 @@ class SubmissionView(APIView):
             if not 'id' in request.data:
                 raise exceptions.ParseError('error:"id" is required') #storageId
             else:
+                
                 storage = Storage.objects.get(id=request.data["id"])
                 storage_file_name = "/".join(storage.url.split('/')[-3:])
                 print(storage_file_name)
