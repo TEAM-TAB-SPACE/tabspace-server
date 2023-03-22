@@ -9,16 +9,20 @@ from lecture_rooms.models import LectureRoom
 class LectureCommentsView(APIView):
     def get(self, request):
         try:
-            if not 'id' in request.data: #lecture_room_id
-                raise exceptions.ParseError('error:"id" is required')
+            # if not 'id' in request.data: #lecture_room_id
+            #     raise exceptions.ParseError('error:"id" is required')
+            try:
+                lectureroom_id = request.GET.get('id', None)
             
-            lectureroom_id = request.data["id"]
-            lecture_id=LectureRoom.objects.get(id=lectureroom_id).lecture_id
-            comments = LectureComment.objects.filter(lecture_id=lecture_id)
+                lecture_id=LectureRoom.objects.get(id=lectureroom_id).lecture_id
+                comments = LectureComment.objects.filter(lecture_id=lecture_id)
+                
+                serializer = LectureCommentReplySerializer(comments, many=True)
+                return Response(status=status.HTTP_200_OK,data=serializer.data)
+            except LectureRoom.DoesNotExist:
+                return Response(status=status.HTTP_404_NOT_FOUND, data='this lectureroom does not exist')
             
-            serializer = LectureCommentReplySerializer(comments, many=True)
             
-            return Response(status=status.HTTP_200_OK,data=serializer.data)
         except LectureComment.DoesNotExist:
             return Response(status=status.HTTP_204_NO_CONTENT,data='no comments')
       

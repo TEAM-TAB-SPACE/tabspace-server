@@ -142,7 +142,7 @@ def update_user_notifications():
                 if completed_submission == 0:
                     msg.append('이제는 정말 과제를 시작해야할 때 (3)')
                 elif completed_submission < (total_homework-1) :
-                    msg.append('탭탭이랑 1일 1과제 어때요 ?  (5)')
+                    msg.append('탭탭이랑 1일 1과제 어때요 ? (5)')
                 elif completed_submission == (total_homework-1):
                     msg.append('과제 1개만 더 힘내봐요 ! (5)')
                 else:

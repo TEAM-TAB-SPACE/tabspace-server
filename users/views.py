@@ -16,6 +16,7 @@ from lectures.models import Lecture, LectureCategory
 from dashboards.models import Dashboard, UserGrowth
 from homeworks.models import Homework, Submission
 from django.contrib.auth import authenticate
+from weekdays.models import Weekday
 
 
 def get_tokens_for_user(user):
@@ -121,7 +122,9 @@ class KakaoRegisterView(APIView) :
             user.save()
           
             return login(user) 
-        except User.DoesNotExist:   
+        except User.DoesNotExist: 
+            from datetime import datetime
+              
             request_data_copy = request.data.copy()            
             request_data_copy['username'] = '1'+str(kakao_id)                 
             serializer = serializers.UserRegisterSerializer(data=request_data_copy)
@@ -151,6 +154,22 @@ class KakaoRegisterView(APIView) :
                         UserGrowth.objects.create(lecture_category=lecture_category, dashboard=dashboard)
                     for homework in Homework.objects.all().order_by('id'):
                         Submission.objects.create(dashboard=dashboard, homework=homework)
+                    
+                    this_month_weekdays = Weekday.objects.last()
+                    weekdays = this_month_weekdays.days.split(',')
+                    holidays = this_month_weekdays.korean_holidays.split(',')
+                    
+                    now = int(datetime.now().strftime('%d')) 
+                    days = ''
+                    for day in weekdays:
+                        if day in holidays:
+                            days += 'h'
+                        elif int(day) < now :
+                            days += '0'
+                        elif int(day) >= now :
+                            break
+                                             
+                    
                     
                     user.last_login = timezone.now()
                     user.save()
