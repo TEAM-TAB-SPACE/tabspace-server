@@ -114,6 +114,7 @@ class KakaoRegisterView(APIView) :
     def post(self, request):
                     
         kakao_id = kakao_access(request)             
+               
                              
         try:
             User.objects.get(username='1'+str(kakao_id))
@@ -136,41 +137,45 @@ class KakaoRegisterView(APIView) :
                 req_secret = SecretKey.objects.get(key=req_key)
                 
                 if serializer.validated_data['realname'] == req_secret.master and serializer.validated_data['phone'] == req_secret.phone and req_secret.active ==1:
-        
-                  
-                    serializer.save()
-                    req_secret.active = 0
-                    req_secret.save()
-                   
+                    serializer.save()              ##유저가입
+                    req_secret.active = 0          
+                    req_secret.save()              ##시크릿키 inactive 처리
                     
+                    ##개강일 이후 가입할 경우를 위한 이전 출석에 대한 처리
+            
+                    this_month_weekdays = Weekday.objects.last()
+                    weekdays = this_month_weekdays.days.split(',')
+                    holidays = this_month_weekdays.korean_holidays.split(',')
+                    
+                    now = int(datetime.now().strftime('%d')) 
+                    attendance = ''
+                    for day in weekdays:
+                        if int(day) < now :
+                            if day in holidays:
+                                attendance += 'h'
+                            else:
+                                attendance += '0'
+                        elif int(day) >= now :
+                            break
+                    # print(attendance)    
                     user_id = serializer.data['id']
                     user = User.objects.get(id=user_id)
+                    
+                    Dashboard.objects.create(user=user, attendance=attendance, notifications='탭스페이스 입과를 환경합니다 (12) 오늘부터 탭탭이와 달려봐요 (6)')  ##유저 대시보드 생성
+                    
+                    
+                    
                     for lecture in Lecture.objects.all().order_by('id'):
                         LectureRoom.objects.create(user=user, lecture=lecture)
                     
-                    Dashboard.objects.create(user=user)
+                    
                     dashboard = Dashboard.objects.get(user_id = user_id)
                     for lecture_category in LectureCategory.objects.all().order_by('id'):
                         UserGrowth.objects.create(lecture_category=lecture_category, dashboard=dashboard)
                     for homework in Homework.objects.all().order_by('id'):
                         Submission.objects.create(dashboard=dashboard, homework=homework)
                     
-                    this_month_weekdays = Weekday.objects.last()
-                    weekdays = this_month_weekdays.days.split(',')
-                    holidays = this_month_weekdays.korean_holidays.split(',')
-                    
-                    now = int(datetime.now().strftime('%d')) 
-                    days = ''
-                    for day in weekdays:
-                        if day in holidays:
-                            days += 'h'
-                        elif int(day) < now :
-                            days += '0'
-                        elif int(day) >= now :
-                            break
-                                             
-                    
-                    
+                   
                     user.last_login = timezone.now()
                     user.save()
                     login(user) 
