@@ -57,9 +57,9 @@ def update_user_notifications():
             weeks[week_num] = week
             week = []
             week_num +=1
-    print(weeks)
+    # print(weeks)
     week_num = list(weeks.keys()) 
-    print(week_num)
+    # print(week_num)
            
     ## 이모티콘 약속 : {'(1)': '😀', '(2)': '🥺','(3)': '🤓', '(4)': '🤗', '(5)': '😉', '(6)': '😎', '(7)': '🥰', '(8)': '😍', '(9)': '🥳', '(10)': '✨', '(11)': '🔥', '(12)': '🎉', '(13)': '🚗', '(14)': '👍'}
     today = today[-2:]
@@ -84,73 +84,76 @@ def update_user_notifications():
     active_lectures = Lecture.objects.filter(active_lecture = True)
     today_lectures = Lecture.objects.filter(today_lecture = True)
     for dashboard in Dashboard.objects.all():
-        msg = []
-        user_name = dashboard.user
-        
-        #월요일, 금요일 알림
-        if datetime(this_year,this_month,int(today)).weekday() == 0:
-            msg.append('탭탭이와 함께 월요병을 날려보아요 (1)')
-        elif datetime(this_year,this_month,int(today)).weekday() == 5:
-            msg.append('드디어 금요일 (11) 금요일도 탭탭이와 함께해요 (11) (11)')
+        try:
+            msg = []
+            user_name = dashboard.user
             
-        #출석관련 알림
-        if dashboard.attendance[-1] == '0':  #전날 결석일 때 알림
-            msg.append(f'{user_name}님 돌아오셨군요 ! 오늘은 열심히 저와 함께 달려보아요 ! (6)')
-            if dashboard.attendance.count('0') >= 1:
-                msg.append(f'총 {dashboard.attendance.count("0")}번 결석하셨어요. 결석이 3번 이상이면 불이익이 발생할 수 있어요 (2)')            
-        elif not '0' in dashboard.attendance:
-            msg.append(f'{user_name}님의 성실함이 눈부셔요 (10) 이대로만 계속 가요 (13) (13)')           
-        
-        #강의 수강 독려 알림 
-        try:      
-            uncompleted_lecture_rooms = LectureRoom.objects.filter(user=user_name, lecture__in = active_lectures, completed = False)
-            if len(uncompleted_lecture_rooms) > len(today_lectures):
-               msg.append('오늘은 밀린 강의를 청소해 볼까요 ? 마음이 한결 가벼워질거에요 (4)') 
-        except LectureRoom.DoesNotExist:
-            msg.append('밀린 강의 == ZERO (10)')    
-        
-        total_homework = len(Homework.objects.all())
-        try: 
-            completed_submission = len(Submission.objects.filter(dashboard=dashboard, is_submitted =True))
-            # print(completed_submission)
-        except Submission.DoesNotExist:
-            completed_submission = 0
-        # if today in weeks[week_num[0]] : #첫주
-        #     continue
-            
-        # elif today in weeks[week_num[1]] : #둘째주
-        #     continue
-            
-        if today in weeks[week_num[2]] : #셋째주
-            if completed_submission == 0:
-                msg.append('이제는 과제를 시작해야할 때 (3)')
-            elif completed_submission == 1:
-                msg.append('과제 1개만 더 힘내봐요 (4)')
+            #월요일, 금요일 알림
+            if datetime(this_year,this_month,int(today)).weekday() == 0:
+                msg.append('탭탭이와 함께 월요병을 날려보아요 (1)')
+            elif datetime(this_year,this_month,int(today)).weekday() == 5:
+                msg.append('드디어 금요일 (11) 금요일도 탭탭이와 함께해요 (11) (11)')
                 
-        elif today in weeks[week_num[-1]] : #마지막주
-            if completed_submission == 0:
-                msg.append('마지막 선물로 탭탭이에게 과제를 제출해 주세요 (4)')
-            elif completed_submission == (total_homework-1):
-                msg.append('과제 1개만 더 힘내봐요 ! (4)')
-            elif completed_submission == total_homework:
-                msg.append('모든 과제를 제출하셨군요 대단해요 (14) (14)')
-            else:
-                msg.append('아직 완료하지 못한 과제가 남아있어요 ! 힘내봐요 (4)')
+            #출석관련 알림
+            if dashboard.attendance[-1] == '0':  #전날 결석일 때 알림
+                msg.append(f'{user_name}님 돌아오셨군요 ! 오늘은 열심히 저와 함께 달려보아요 ! (6)')
+                if dashboard.attendance.count('0') >= 1:
+                    msg.append(f'총 {dashboard.attendance.count("0")}번 결석하셨어요. 결석이 3번 이상이면 불이익이 발생할 수 있어요 (2)')            
+            elif not '0' in dashboard.attendance:
+                msg.append(f'{user_name}님의 성실함이 눈부셔요 (10) 이대로만 계속 가요 (13) (13)')           
+            
+            #강의 수강 독려 알림 
+            try:      
+                uncompleted_lecture_rooms = LectureRoom.objects.filter(user=user_name, lecture__in = active_lectures, completed = False)
+                if len(uncompleted_lecture_rooms) > len(today_lectures):
+                    msg.append('오늘은 밀린 강의를 청소해 볼까요 ? 마음이 한결 가벼워질거에요 (4)') 
+            except LectureRoom.DoesNotExist:
+                msg.append('밀린 강의 == ZERO (10)')    
+            
+            total_homework = len(Homework.objects.all())
+            try: 
+                completed_submission = len(Submission.objects.filter(dashboard=dashboard, is_submitted =True))
+                # print(completed_submission)
+            except Submission.DoesNotExist:
+                completed_submission = 0
+            # if today in weeks[week_num[0]] : #첫주
+            #     continue
                 
-        elif today in weeks[week_num[-2]] : #넷째주
-            if completed_submission == 0:
-                msg.append('이제는 정말 과제를 시작해야할 때 (3)')
-            elif completed_submission < (total_homework-1) :
-                msg.append('탭탭이랑 1일 1과제 어때요 ?  (5)')
-            elif completed_submission == (total_homework-1):
-                msg.append('과제 1개만 더 힘내봐요 ! (5)')
-            else:
-                msg.append('벌써 모든 과제를 제출하셨군요 대단해요 (14) (14)')
-        # print(msg)
-        msg = ','.join(msg)
-        # print(msg)
-        dashboard.notifications = msg   
-        dashboard.save()   
+            # elif today in weeks[week_num[1]] : #둘째주
+            #     continue
+                
+            if today in weeks[week_num[2]] : #셋째주
+                if completed_submission == 0:
+                    msg.append('이제는 과제를 시작해야할 때 (3)')
+                elif completed_submission == 1:
+                    msg.append('과제 1개만 더 힘내봐요 (4)')
+                    
+            elif today in weeks[week_num[-1]] : #마지막주
+                if completed_submission == 0:
+                    msg.append('마지막 선물로 탭탭이에게 과제를 제출해 주세요 (4)')
+                elif completed_submission == (total_homework-1):
+                    msg.append('과제 1개만 더 힘내봐요 ! (4)')
+                elif completed_submission == total_homework:
+                    msg.append('모든 과제를 제출하셨군요 대단해요 (14) (14)')
+                else:
+                    msg.append('아직 완료하지 못한 과제가 남아있어요 ! 힘내봐요 (4)')
+                    
+            elif today in weeks[week_num[-2]] : #넷째주
+                if completed_submission == 0:
+                    msg.append('이제는 정말 과제를 시작해야할 때 (3)')
+                elif completed_submission < (total_homework-1) :
+                    msg.append('탭탭이랑 1일 1과제 어때요 ?  (5)')
+                elif completed_submission == (total_homework-1):
+                    msg.append('과제 1개만 더 힘내봐요 ! (5)')
+                else:
+                    msg.append('벌써 모든 과제를 제출하셨군요 대단해요 (14) (14)')
+            # print(msg)
+            msg = ','.join(msg)
+            # print(msg)
+            dashboard.notifications = msg   
+            dashboard.save() 
+        except:
+            pass 
     print(f'{datetime.now()}:notification updated')  
         
              
