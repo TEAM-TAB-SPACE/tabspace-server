@@ -15,7 +15,7 @@ from lectures.models import Lecture
 
 
 
-# @decorators.permission_classes([permissions.IsAuthenticated])
+@decorators.permission_classes([permissions.IsAuthenticated])
 class LectureRoomsView(APIView):
     def get(self, request):
         try:
@@ -28,7 +28,7 @@ class LectureRoomsView(APIView):
         
     def post(self, request):
         try:
-            user_id = 9
+            user_id = request.user.id 
             if not 'id' in request.data:
                 raise exceptions.ParseError('error:"id" is required')
             if len(request.data)==1:
