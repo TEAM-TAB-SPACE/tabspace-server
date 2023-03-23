@@ -100,9 +100,9 @@ class CommentReplyView(APIView):
             if not 'id' in request.data:  #reply_id
                 raise exceptions.ParseError('error:"id" is required')
             reply_id = request.data['id']
-            reply = LectureComment.objects.get(id=reply_id, user=user_id)
+            reply = CommentReply.objects.get(id=reply_id, user=user_id)
             reply.delete()
             return Response(status=status.HTTP_200_OK, data='deleted') 
-        except LectureComment.DoesNotExist:
+        except CommentReply.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND, data='this reply does not exist') 
         
