@@ -94,8 +94,7 @@ class KakaoRegisterView(APIView) :
     
     def post(self, request):
                     
-        # kakao_id = kakao_access(request)  
-        kakao_id = 0  
+        kakao_id = kakao_access(request)   
                    
         if not 'realname' in request.data:
             try:

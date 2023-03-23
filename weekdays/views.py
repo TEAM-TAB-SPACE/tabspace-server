@@ -4,7 +4,7 @@ from rest_framework import exceptions, decorators, permissions, status
 from . import serializers 
 from .models import Weekday
 
-
+@decorators.permission_classes([permissions.IsAuthenticated])
 class ProductsView(APIView):
     def get(self, request):
         weekday = Weekday.objects.last()

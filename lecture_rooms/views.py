@@ -15,11 +15,11 @@ from lectures.models import Lecture
 
 
 
-
+@decorators.permission_classes([permissions.IsAuthenticated])
 class LectureRoomsView(APIView):
     def get(self, request):
         try:
-            user_id = 9   #나중에 수정 
+            user_id = request.user.id 
             lecture_rooms = LectureRoom.objects.filter(user=user_id)
             serializer = serializers.LectureRoomsSerializer(lecture_rooms, many=True)
             return Response(status=status.HTTP_200_OK,data=serializer.data)
@@ -28,7 +28,7 @@ class LectureRoomsView(APIView):
         
     def post(self, request):
         try:
-            user_id = 9
+            user_id = request.user.id
             if not 'id' in request.data:
                 raise exceptions.ParseError('error:"id" is required')
             if len(request.data)==1:
@@ -41,7 +41,7 @@ class LectureRoomsView(APIView):
                 serializer.save()
                 return Response(data=serializer.data, status=status.HTTP_202_ACCEPTED)
                 
-            if lecture_room.user_id != user_id: #나중에 수정 
+            if lecture_room.user_id != user_id:  
                 raise exceptions.PermissionDenied('This user do not have permission of this lectureroom')
             copy_data = request.data.copy()
             

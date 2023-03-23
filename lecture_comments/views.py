@@ -1,16 +1,15 @@
-from rest_framework import exceptions, status
+from rest_framework import exceptions, status, decorators, permissions
 from rest_framework.response import Response
 from rest_framework.views    import APIView
 from .serializers import LectureCommentReplySerializer, LectureCommentSerializer, CommentReplySerializer
 from .models import LectureComment, CommentReply
 from lecture_rooms.models import LectureRoom
 
-
+@decorators.permission_classes([permissions.IsAuthenticated])
 class LectureCommentsView(APIView):
     def get(self, request):
         try:
-            # if not 'id' in request.data: #lecture_room_id
-            #     raise exceptions.ParseError('error:"id" is required')
+    
             try:
                 lectureroom_id = request.GET.get('id', None)
             
@@ -25,10 +24,12 @@ class LectureCommentsView(APIView):
             
         except LectureComment.DoesNotExist:
             return Response(status=status.HTTP_204_NO_CONTENT,data='no comments')
-      
+        
+        
+@decorators.permission_classes([permissions.IsAuthenticated])
 class LectureCommentView(APIView):  
     def post(self, request):
-        user_id = 9
+        user_id = request.user.id
         if not 'id' in request.data:  #lecture_room_id
             raise exceptions.ParseError('error:"id" is required') 
         lectureroom_id = request.data["id"]
@@ -43,7 +44,7 @@ class LectureCommentView(APIView):
         
     def put(self,request):
         try:        
-            user_id = 9
+            user_id = request.user.id
             if (not 'id' in request.data) or (not 'comment' in request.data):  #comment_id
                 raise exceptions.ParseError('error:"id" and "comment" are required')
             comment_id = request.data['id']
@@ -57,7 +58,7 @@ class LectureCommentView(APIView):
 
     def delete(self,request):
         try:
-            user_id = 9
+            user_id = request.user.id
             if not 'id' in request.data:  #comment_id
                 raise exceptions.ParseError('error:"id" is required')
             comment_id = request.data['id']
@@ -67,19 +68,21 @@ class LectureCommentView(APIView):
         except LectureComment.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND, data='this lecture comment does not exist') 
                          
-
+@decorators.permission_classes([permissions.IsAuthenticated])
 class CommentReplyView(APIView):  
+    
     def post(self, request):
-        user_id = 9
+        user_id = request.user.id
         data = request.data.copy()
         data["user"] = user_id
         serializer = CommentReplySerializer(data=data)
         serializer.is_valid(raise_exception=True) 
         serializer.save()
-        return Response(status=status.HTTP_201_CREATED, data=serializer.data) 
+        return Response(status=status.HTTP_201_CREATED, data=serializer.data)
+     
     def put(self,request):
         try:        
-            user_id = 9
+            user_id = request.user.id
             if (not 'id' in request.data) or (not 'reply' in request.data):  #reply_id
                 raise exceptions.ParseError('error:"id" and "reply" are required')
             reply_id = request.data['id']
@@ -90,9 +93,10 @@ class CommentReplyView(APIView):
             return Response(status=status.HTTP_200_OK, data=serializer.data) 
         except CommentReply.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND, data='this reply does not exist')   
+        
     def delete(self,request):
         try:
-            user_id = 9
+            user_id = request.user.id
             if not 'id' in request.data:  #reply_id
                 raise exceptions.ParseError('error:"id" is required')
             reply_id = request.data['id']

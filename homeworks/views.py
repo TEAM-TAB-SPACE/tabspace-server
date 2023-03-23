@@ -16,11 +16,11 @@ from config import settings
 from users.models import User
 from django.db import transaction
 
-
+@decorators.permission_classes([permissions.IsAuthenticated])
 class SubmissionView(APIView):
     def get(self, request):
         try:
-            user_id = 9   #나중에 수정 
+            user_id = request.user.id
             dashboard_id = Dashboard.objects.get(user_id=user_id).id
             submission = Submission.objects.filter(dashboard_id=dashboard_id)
             serializer = serializers.SubmissionSerializer(submission, many=True)
@@ -30,7 +30,7 @@ class SubmissionView(APIView):
         
     def post(self, request):
         try:
-            user_id = 9  
+            user_id = request.user.id 
             if not 'id' in request.data:
                 raise exceptions.ParseError('error:"id" is required')   #submission id
             if len(request.data)==1:
@@ -39,12 +39,10 @@ class SubmissionView(APIView):
             if request.data['file'] == '':
                 raise exceptions.ParseError('error: there is no data to be updated')
             
-            submission = Submission.objects.get(id=request.data['id'])
-            dashboard_id = submission.dashboard_id
-            # user_id = Dashboard.objects.get(id=dashboard_id).user_id           
+            submission = Submission.objects.get(id=request.data['id'])            
+                      
             user_uuid = User.objects.get(id=user_id).uuid
-            # if user_id != 9: #나중에 수정 
-            #     raise exceptions.PermissionDenied('This user do not have permission of this submission')
+            
             file_serializer = serializers.StorageFileSerializer(submission, request.data, partial=True)
             file_serializer.is_valid(raise_exception=True)            
             

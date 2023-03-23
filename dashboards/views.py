@@ -16,11 +16,11 @@ from lecture_rooms.serializers import DashboardLectureRoomSerializer
 from .models import UserGrowth, Dashboard
 from .serializers import AttendanceSerializer, AdminAttendanceSerializer, AdminHomeworkSerializer, NotificationSerializer
 
-
+@decorators.permission_classes([permissions.IsAuthenticated])
 class TodayLectureView(APIView):
     def get(self, request):
         try:
-            user_id = 9
+            user_id = request.user.id
             today_lectures = Lecture.objects.filter(today_lecture=1)
             lecture_rooms = LectureRoom.objects.filter(user_id=user_id, lecture__in =today_lectures)
             
@@ -29,11 +29,11 @@ class TodayLectureView(APIView):
         except Lecture.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND,data='holiday')
             
-
+@decorators.permission_classes([permissions.IsAuthenticated])
 class UserGrowthView(APIView):
     def get(self, request):
         try:
-            user_id = 9
+            user_id = request.user.id
             dashboard = Dashboard.objects.get(user_id=user_id)
             print(dashboard)
             growths = UserGrowth.objects.filter(dashboard= dashboard)
@@ -43,11 +43,11 @@ class UserGrowthView(APIView):
         except Dashboard.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND,data='this dashboard does not exist')
 
-
+@decorators.permission_classes([permissions.IsAuthenticated])
 class LatestVideoView(APIView):
     def get(self, request):
         try:
-            user_id = 9
+            user_id = request.user.id
             lecture_room = LectureRoom.objects.filter(user_id=user_id)
             latest_lecture = lecture_room.latest('updated_at')
             if latest_lecture.is_clicked==False:
@@ -59,21 +59,23 @@ class LatestVideoView(APIView):
             return Response(status=status.HTTP_200_OK,data=serializer.data)
         except LectureRoom.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND,data='this lectureroom does not exist')
-        
+
+@decorators.permission_classes([permissions.IsAuthenticated])       
 class AttendanceView(APIView):
     def get(self, request):
         try:
-            user_id = 9
+            user_id = request.user.id
             dashboard = Dashboard.objects.get(user_id=user_id)          
             serializer= AttendanceSerializer(dashboard)
             return Response(status=status.HTTP_200_OK,data=serializer.data)
         except Dashboard.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND,data='this dashboard does not exist')
 
+@decorators.permission_classes([permissions.IsAuthenticated])
 class NotificationView(APIView):
     def get(self, request):
         try:
-            user_id = 9
+            user_id = request.user.id
             dashboard = Dashboard.objects.get(user_id=user_id)          
             serializer= NotificationSerializer(dashboard)
             return Response(status=status.HTTP_200_OK,data=serializer.data)
@@ -82,7 +84,7 @@ class NotificationView(APIView):
 
 
 ### admin page views
-
+@decorators.permission_classes([permissions.IsAuthenticated])
 class AdminAttendanceView(APIView):
     def get(self, request):
         try:
@@ -91,7 +93,8 @@ class AdminAttendanceView(APIView):
             return Response(status=status.HTTP_200_OK,data=serializer.data)
         except Dashboard.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND,data='dashboard does not exist')
-
+        
+@decorators.permission_classes([permissions.IsAuthenticated])
 class AdminHomeworkView(APIView):
     def get(self, request):
         try:
