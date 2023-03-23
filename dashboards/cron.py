@@ -21,7 +21,7 @@ def update_user_attendance():
             
         print(f'{datetime.now()}:today is holiday')
     else:        
-        for user in User.objects.filter(is_superuser = False):
+        for user in User.objects.filter(is_superuser = False, is_staff = False):
             
             completed_lectures = LectureRoom.objects.filter(user=user, lecture__in = today_lectures, completed = True)
             

@@ -14,8 +14,7 @@ class LectureRoomSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = LectureRoom
-        fields = ('playtime','endtime','is_clicked',)
-        
+        fields = ('playtime','endtime','is_clicked',)       
         
 class CompletedLectureRoomSerializer(serializers.ModelSerializer):
     

@@ -15,7 +15,7 @@ from lectures.models import Lecture
 
 
 
-@decorators.permission_classes([permissions.IsAuthenticated])
+# @decorators.permission_classes([permissions.IsAuthenticated])
 class LectureRoomsView(APIView):
     def get(self, request):
         try:
@@ -28,15 +28,15 @@ class LectureRoomsView(APIView):
         
     def post(self, request):
         try:
-            user_id = request.user.id
+            user_id = 9
             if not 'id' in request.data:
                 raise exceptions.ParseError('error:"id" is required')
             if len(request.data)==1:
                 raise exceptions.ParseError('error: there is no data to be updated')
             
             lecture_room = LectureRoom.objects.get(id=request.data['id'])
-            if lecture_room.completed == 1:
-                serializer = serializers.CompletedLectureRoomSerializer(lecture_room, data = request.data)
+            if lecture_room.completed == 1: #이미 다 들은 강의라면 endpoint 만 업데이트 한다.
+                serializer = serializers.CompletedLectureRoomSerializer(lecture_room, data = request.data, partial=True)
                 serializer.is_valid(raise_exception=True)
                 serializer.save()
                 return Response(data=serializer.data, status=status.HTTP_202_ACCEPTED)
@@ -61,14 +61,16 @@ class LectureRoomsView(APIView):
             import math          
             lecture_room.progress = math.ceil(lecture_room.playtime/lecture_duration*100)   
             if lecture_room.progress >= 100:
-                lecture_room.progress = 100
-                lecture_room.completed = 1
+                lecture_room.progress = 100   #progress 는 100을 넘지 않는다.
                 lecture_room.save()
-                dashboard = Dashboard.objects.get(user_id=user_id)
-                lecture_category=lecture_room.lecture.category
-                user_growths = UserGrowth.objects.get(dashboard=dashboard, lecture_category= lecture_category)
-                user_growths.ability += math.ceil(100/len(Lecture.objects.filter(category = lecture_category)))
-                user_growths.save()
+                if lecture_room.endtime >= lecture_duration-1:  #progress 는 100이고 endtime이 끝지점일 때만 강의 수강이 완료됨 (오차범위 1초)
+                    lecture_room.completed = 1
+                    lecture_room.save()
+                    dashboard = Dashboard.objects.get(user_id=user_id)
+                    lecture_category=lecture_room.lecture.category
+                    user_growths = UserGrowth.objects.get(dashboard=dashboard, lecture_category= lecture_category)
+                    user_growths.ability += math.ceil(100/len(Lecture.objects.filter(category = lecture_category)))
+                    user_growths.save()
             return Response(data={'endtime':lecture_room.endtime,'playtime':lecture_room.playtime,'completed':lecture_room.completed, 'progress':lecture_room.progress,'is_clicked':lecture_room.is_clicked}, status=status.HTTP_206_PARTIAL_CONTENT)
         except LectureRoom.DoesNotExist:
             return Response(data='This lectureRoom does not exist', status=status.HTTP_404_NOT_FOUND)
