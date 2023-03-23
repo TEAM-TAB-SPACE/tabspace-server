@@ -79,25 +79,6 @@ def kakao_access(request):
     return kakao_id
 
 
-class KaKaoSignInCallBackView(APIView):
-    def post(self, request):
-        kakao_id= kakao_access(request)
-                      
-        
-        try:
-            user = User.objects.get(username='1'+str(kakao_id))
-            
-            user.last_login = timezone.now()
-            user.save()
-            
-            
-            return login(user)
-            
-        except User.DoesNotExist:
-            # 기존에 가입된 유저가 없으면 400, 프론트에서 회원가입 post로 전환. post에 인가코드 필요
-            return  Response(status=status.HTTP_404_NOT_FOUND, data='this user does not exist')
-
-
 class UserNameView(APIView):
     def get(self, request):
         try:
@@ -113,9 +94,19 @@ class KakaoRegisterView(APIView) :
     
     def post(self, request):
                     
-        kakao_id = kakao_access(request)             
-               
-                             
+        # kakao_id = kakao_access(request)  
+        kakao_id = 0  
+                   
+        if not 'realname' in request.data:
+            try:
+                User.objects.get(username='1'+str(kakao_id))
+                user = User.objects.get(username='1'+str(kakao_id))
+                user.last_login = timezone.now()
+                user.save()
+            
+                return login(user) 
+            except User.DoesNotExist:
+                return Response(status=status.HTTP_404_NOT_FOUND, data='This user does not exist')                                
         try:
             User.objects.get(username='1'+str(kakao_id))
             user = User.objects.get(username='1'+str(kakao_id))
