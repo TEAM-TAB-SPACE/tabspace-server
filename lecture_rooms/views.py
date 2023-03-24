@@ -47,8 +47,8 @@ class LectureRoomsView(APIView):
             
             if ('playtime' in request.data) and ('endtime' in request.data):
                 difference = copy_data['endtime'] - lecture_room.endtime
-                if difference > 0 and (copy_data['playtime'] +1) >= difference:        #이전 중지시점과 현재 중지 시점의 시간차가 0 보다 크고, 재생시간이 시간차보다 크면(오차범위 1초)        
-                    copy_data['playtime'] = lecture_room.playtime + difference         #누적재생시간에 시간차를 합산 함
+                if copy_data['playtime'] > 0 and copy_data['endtime'] > lecture_room.endtime:               
+                    copy_data['playtime'] += difference          #누적재생시간에 시간차를 합산 함
                 else:
                     copy_data['playtime'] = lecture_room.playtime                      #그렇지 않으면 그대로
             elif ('playtime' in request.data) or ('endtime' in request.data):
@@ -59,7 +59,8 @@ class LectureRoomsView(APIView):
             serializer.save()
             lecture_duration = lecture_room.lecture.duration  
             import math          
-            lecture_room.progress = math.ceil(lecture_room.playtime/lecture_duration*100)   
+            lecture_room.progress = math.ceil(lecture_room.playtime/lecture_duration*100)  
+            lecture_room.save() 
             if lecture_room.progress >= 100:
                 lecture_room.progress = 100   #progress 는 100을 넘지 않는다.
                 lecture_room.save()

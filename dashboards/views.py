@@ -50,7 +50,7 @@ class LatestVideoView(APIView):
             user_id = request.user.id
             lecture_room = LectureRoom.objects.filter(user_id=user_id)
             latest_lecture = lecture_room.latest('updated_at')
-            if latest_lecture.is_clicked==False:
+            if latest_lecture.playtime==0:
                 return Response(status=status.HTTP_204_NO_CONTENT, data='수강한 강의가 없음')
             latest_lecture = latest_lecture.lecture
             print(latest_lecture)            

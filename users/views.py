@@ -6,6 +6,7 @@ from rest_framework.views    import APIView
 from rest_framework.response import Response
 from rest_framework import exceptions, decorators, permissions, status
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt import views as jwt_views, serializers as jwt_serializers, exceptions as jwt_exceptions
 # from django.conf import settings
 from config import settings
 from django.utils import timezone
@@ -34,7 +35,14 @@ def login(user):
     res = Response()
     serializer = serializers.UserIdSerializer(user)
 
-    # res.data = tokens
+    res.set_cookie(
+        key=settings.SIMPLE_JWT['AUTH_COOKIE'],
+        value=tokens["access"],
+        expires=int(settings.SIMPLE_JWT["ACCESS_TOKEN_LIFETIME"].total_seconds()),
+        secure=settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'],
+        httponly=settings.SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
+        samesite=settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE']
+        )
     res.set_cookie(
         key=settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH'],
         value=tokens["refresh"],
@@ -43,9 +51,7 @@ def login(user):
         httponly=settings.SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
         samesite=settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE']
     )
-    res.data = {"Success" : "Login successfully","tokens":tokens, "user":serializer.data}
-   
-    
+    res.data = {"Success" : "Login successfully","tokens":tokens, "user":serializer.data}  
     
     res.status=status.HTTP_200_OK
     
@@ -78,11 +84,11 @@ def kakao_access(request):
     
     return kakao_id
 
-
+@decorators.permission_classes([permissions.IsAuthenticated])
 class UserNameView(APIView):
     def get(self, request):
         try:
-            user_id = 9
+            user_id = request.user.id
             user = User.objects.get(id=user_id)
             serializer = serializers.UserSerializer(user)
             return Response(data=serializer.data, status=status.HTTP_200_OK)  
@@ -95,6 +101,7 @@ class KakaoRegisterView(APIView) :
     def post(self, request):
                     
         kakao_id = kakao_access(request)   
+        # kakao_id = 1214324  
                    
         if not 'realname' in request.data:
             try:
@@ -181,7 +188,41 @@ class KakaoRegisterView(APIView) :
             except SecretKey.DoesNotExist:
                 return Response(data='this key does not exist', status=status.HTTP_400_BAD_REQUEST)
              
-               
+             
+class CookieTokenRefreshSerializer(jwt_serializers.TokenRefreshSerializer):
+    refresh = None
+
+    def validate(self, attrs):
+        attrs['refresh'] = self.context['request'].COOKIES.get('refresh')
+        print(attrs['refresh'])
+        if attrs['refresh']:
+            return super().validate(attrs)
+        else:
+            raise jwt_exceptions.InvalidToken(
+                'No valid token found in cookie \'refresh\'')
+
+
+class CookieTokenRefreshView(jwt_views.TokenRefreshView):
+    # serializer_class = CookieTokenRefreshSerializer
+
+    def finalize_response(self, request, response, *args, **kwargs):
+        if response.data.get("access"):
+            res = Response()
+            res.set_cookie(
+                key=settings.SIMPLE_JWT['AUTH_COOKIE'],
+                value=response.data["access"],
+                expires=int(settings.SIMPLE_JWT["ACCESS_TOKEN_LIFETIME"].total_seconds()),
+                secure=settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'],
+                httponly=settings.SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
+                samesite=settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE']
+                )
+            res.data = {"Success"}
+            # del response.data["refresh"]
+            return res
+        # response["X-CSRFToken"] = request.COOKIES.get("csrftoken")
+        return super().finalize_response(request, response, *args, **kwargs)
+    
+                   
 @decorators.permission_classes([permissions.IsAuthenticated])
 class LogoutView(APIView):
     def post(self, request):
@@ -192,6 +233,7 @@ class LogoutView(APIView):
             token = RefreshToken(refreshToken)
             token.blacklist()
             res = Response()
+            res.delete_cookie(settings.SIMPLE_JWT['AUTH_COOKIE'])
             res.delete_cookie(settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH'])
             res.delete_cookie("X-CSRFToken")
             res.delete_cookie("csrftoken")
