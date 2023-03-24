@@ -19,7 +19,7 @@ from lectures.models import Lecture
 class LectureRoomsView(APIView):
     def get(self, request):
         try:
-            user_id = request.user.id 
+            user_id = request.user.id
             lecture_rooms = LectureRoom.objects.filter(user=user_id)
             serializer = serializers.LectureRoomsSerializer(lecture_rooms, many=True)
             return Response(status=status.HTTP_200_OK,data=serializer.data)
@@ -28,7 +28,7 @@ class LectureRoomsView(APIView):
         
     def post(self, request):
         try:
-            user_id = request.user.id 
+            user_id = request.user.id
             if not 'id' in request.data:
                 raise exceptions.ParseError('error:"id" is required')
             if len(request.data)==1:
@@ -48,7 +48,7 @@ class LectureRoomsView(APIView):
             if ('playtime' in request.data) and ('endtime' in request.data):
                 difference = copy_data['endtime'] - lecture_room.endtime
                 if copy_data['playtime'] > 0 and copy_data['endtime'] > lecture_room.endtime:               
-                    copy_data['playtime'] += difference          #누적재생시간에 시간차를 합산 함
+                    copy_data['playtime'] = lecture_room.playtime + difference          #누적재생시간에 시간차를 합산 함
                 else:
                     copy_data['playtime'] = lecture_room.playtime                      #그렇지 않으면 그대로
             elif ('playtime' in request.data) or ('endtime' in request.data):
