@@ -90,7 +90,7 @@ class UserNameView(APIView):
         try:
             user_id = request.user.id
             user = User.objects.get(id=user_id)
-            serializer = serializers.UserSerializer(user)
+            serializer = serializers.UserIdSerializer(user)
             return Response(data=serializer.data, status=status.HTTP_200_OK)  
         except User.DoesNotExist:
             return Response(data='This user does not exist', status=status.HTTP_404_NOT_FOUND)  

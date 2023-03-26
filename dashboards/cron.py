@@ -65,11 +65,11 @@ def update_user_notifications():
     today = today[-2:]
     # 개강알림
     if today == weeks[1][0]:
-        Dashboard.objects.all().update(notifications = '오늘은 탭스페이스 1기 프론트엔드 과정 개강일입니다 (12) 이제부터 탭탭이와 함께 달려보아요 ! (1)')       
+        Dashboard.objects.all().update(notifications = '오늘은 탭스페이스 1기 프론트엔드 과정 개강일입니다 (12), 이제부터 탭탭이와 함께 달려보아요 ! (1)')       
         return print(f'{datetime.now()}:notification updated')
     # 종강알림
     if today == weeks[week_num[-1]][-1]:
-        Dashboard.objects.all().update(notifications = '오늘은 탭스페이스 1기 프론트엔드 과정 종강일입니다 (12) 그 동안 고생 많으셨습니다 ! 강의평가도 참여 부탁드려요 (7)')       
+        Dashboard.objects.all().update(notifications = '오늘은 탭스페이스 1기 프론트엔드 과정 종강일입니다 (12), 그 동안 고생 많으셨습니다 ! 강의평가도 참여 부탁드려요 (7)')       
         return print(f'{datetime.now()}:notification updated')
     #공휴일일 때 알림
     if today in holidays:

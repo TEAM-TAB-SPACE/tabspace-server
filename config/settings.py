@@ -235,7 +235,7 @@ SIMPLE_JWT = {
 }
 
 # CORS 관련 추가
-CORS_ORIGIN_WHITELIST = ['http://127.0.0.1:3000','http://localhost:3000']
+CORS_ORIGIN_WHITELIST = ['http://127.0.0.1:3000','http://localhost:3000','https://tab.tabspace.site']
 CORS_ALLOW_CREDENTIALS = True #쿠키가 cross-site HTTP 요청에 포함될 수 있다
 
 # CSRF_COOKIE_SECURE = True
