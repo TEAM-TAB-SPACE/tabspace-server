@@ -101,7 +101,7 @@ class KakaoRegisterView(APIView) :
     def post(self, request):
                     
         kakao_id = kakao_access(request)   
-        # kakao_id = 1214324  
+        
                    
         if not 'realname' in request.data:
             try:
@@ -201,14 +201,13 @@ class CookieTokenRefreshSerializer(jwt_serializers.TokenRefreshSerializer):
             raise jwt_exceptions.InvalidToken(
                 'No valid token found in cookie \'refresh\'')
 
-
 class CookieTokenRefreshView(jwt_views.TokenRefreshView):
-    # serializer_class = CookieTokenRefreshSerializer
+    serializer_class = CookieTokenRefreshSerializer
 
     def finalize_response(self, request, response, *args, **kwargs):
         if response.data.get("access"):
-            res = Response()
-            res.set_cookie(
+            # res = Response()
+            response.set_cookie(
                 key=settings.SIMPLE_JWT['AUTH_COOKIE'],
                 value=response.data["access"],
                 expires=int(settings.SIMPLE_JWT["ACCESS_TOKEN_LIFETIME"].total_seconds()),
@@ -216,9 +215,9 @@ class CookieTokenRefreshView(jwt_views.TokenRefreshView):
                 httponly=settings.SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
                 samesite=settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE']
                 )
-            res.data = {"Success"}
+            # response.data = {"Success"}
             # del response.data["refresh"]
-            return res
+            # return response
         # response["X-CSRFToken"] = request.COOKIES.get("csrftoken")
         return super().finalize_response(request, response, *args, **kwargs)
     
