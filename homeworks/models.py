@@ -15,5 +15,5 @@ class Submission(CommonModel):
     
 class Storage(models.Model):
     submission = models.ForeignKey('homeworks.Submission', on_delete=models.CASCADE, related_name="storages")
-    url = models.CharField(max_length=255)
+    url = models.TextField()
     file = models.FileField(blank=True, null=True)

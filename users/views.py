@@ -34,11 +34,11 @@ def login(user):
     tokens = get_tokens_for_user(user)
     res = Response()
     serializer = serializers.UserIdSerializer(user)
-
     res.set_cookie(
         key=settings.SIMPLE_JWT['AUTH_COOKIE'],
         value=tokens["access"],
         expires=int(settings.SIMPLE_JWT["ACCESS_TOKEN_LIFETIME"].total_seconds()),
+        domain=settings.SIMPLE_JWT['AUTH_COOKIE_DOMAIN'],
         secure=settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'],
         httponly=settings.SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
         samesite=settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE']
@@ -47,6 +47,7 @@ def login(user):
         key=settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH'],
         value=tokens["refresh"],
         expires=int(settings.SIMPLE_JWT["REFRESH_TOKEN_LIFETIME"].total_seconds()),
+        domain=settings.SIMPLE_JWT['AUTH_COOKIE_DOMAIN'],
         secure=settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'],
         httponly=settings.SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
         samesite=settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE']
@@ -190,6 +191,7 @@ class KakaoRegisterView(APIView) :
              
              
 class CookieTokenRefreshSerializer(jwt_serializers.TokenRefreshSerializer):
+    
     refresh = None
 
     def validate(self, attrs):
@@ -211,6 +213,7 @@ class CookieTokenRefreshView(jwt_views.TokenRefreshView):
                 key=settings.SIMPLE_JWT['AUTH_COOKIE'],
                 value=response.data["access"],
                 expires=int(settings.SIMPLE_JWT["ACCESS_TOKEN_LIFETIME"].total_seconds()),
+                domain=settings.SIMPLE_JWT['AUTH_COOKIE_DOMAIN'],
                 secure=settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'],
                 httponly=settings.SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
                 samesite=settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE']
@@ -232,8 +235,14 @@ class LogoutView(APIView):
             token = RefreshToken(refreshToken)
             token.blacklist()
             res = Response()
-            res.delete_cookie(settings.SIMPLE_JWT['AUTH_COOKIE'])
-            res.delete_cookie(settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH'])
+            res.delete_cookie(
+                key = settings.SIMPLE_JWT['AUTH_COOKIE'],
+                domain=settings.SIMPLE_JWT['AUTH_COOKIE_DOMAIN']
+                )
+            res.delete_cookie(
+                key = settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH'],
+                domain=settings.SIMPLE_JWT['AUTH_COOKIE_DOMAIN']
+                )
             res.delete_cookie("X-CSRFToken")
             res.delete_cookie("csrftoken")
             # res["X-CSRFToken"]=None

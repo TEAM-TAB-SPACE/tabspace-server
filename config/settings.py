@@ -27,7 +27,7 @@ BASE_URL = secrets["base_url"]
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 STATIC_ROOT = os.path.join(BASE_DIR, 'static') 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['tab.tabspace.site','tabspace.site','admin.tabspace.site']
 
 
 # Application definition
@@ -224,7 +224,7 @@ SIMPLE_JWT = {
     # Cookie name. Enables cookies if value is set.
     'AUTH_COOKIE_REFRESH': 'refresh',
     # A string like "example.com", or None for standard domain cookie. 나중에 client domain 주소로 수정
-    'AUTH_COOKIE_DOMAIN': None,
+    'AUTH_COOKIE_DOMAIN': '.tabspace.site',
     # # Whether the auth cookies should be secure (https:// only).
     'AUTH_COOKIE_SECURE': True, 
     # # Http only cookie flag.It's not fetch by javascript.
@@ -235,7 +235,7 @@ SIMPLE_JWT = {
 }
 
 # CORS 관련 추가
-CORS_ORIGIN_WHITELIST = ['http://127.0.0.1:3000','http://localhost:3000','https://tab.tabspace.site']
+CORS_ORIGIN_WHITELIST = ['http://127.0.0.1:3000','http://localhost:3000','https://tab.tabspace.site', 'https://admin.tabspace.site']
 CORS_ALLOW_CREDENTIALS = True #쿠키가 cross-site HTTP 요청에 포함될 수 있다
 
 # CSRF_COOKIE_SECURE = True

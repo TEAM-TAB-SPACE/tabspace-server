@@ -16,5 +16,5 @@ class CourseReview(CommonModel):
     )
     
     score = models.PositiveIntegerField(choices=rating)
-    comment = models.TextField(null=True, blank=True)
+    comment = models.TextField(null=True, blank=True, max_length=1000)
     
