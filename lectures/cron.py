@@ -64,7 +64,7 @@ def update_monthly_lectures():
     days = []
     weekdays = ''
 
-    for i in range(1, int(this_month_last_day)):
+    for i in range(1, int(this_month_last_day)+1):
         day = datetime(this_year,this_month,i).weekday()
         
         if day!=5 and day!=6:
