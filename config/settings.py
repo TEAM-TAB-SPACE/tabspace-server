@@ -65,11 +65,11 @@ INSTALLED_APPS = [
 ]
 
 CRONJOBS = [
-    ('0 0 1 * *', 'lectures.cron.update_monthly_lectures', '>> /home/ubuntu/tabspace-server/cron_logs/update_monthly_lectures.log'),
-    ('0 0 * * 1-5', 'lectures.cron.update_today_lectures', '>> /home/ubuntu/tabspace-server/cron_logs/update_today_lectures.log'),   
-    ('59 23 * * 1-5', 'dashboards.cron.update_user_attendance', '>> /home/ubuntu/tabspace-server/cron_logs/update_user_attendance.log'),   
-    ('0 0 * * 6', 'lectures.cron.update_no_today_lectures', '>> /home/ubuntu/tabspace-server/cron_logs/update_no_today_lectures.log'),   
-    ('1 0 * * *', 'dashboards.cron.update_user_notifications', '>> /home/ubuntu/tabspace-server/cron_logs/update_user_notifications.log'),   
+    ('0 0 1 * *', 'lectures.cron.update_monthly_lectures', '>> /root/tabspace-server/cron_logs/update_monthly_lectures.log'),
+    ('0 0 * * 1-5', 'lectures.cron.update_today_lectures', '>> /root/tabspace-server/cron_logs/update_today_lectures.log'),   
+    ('59 23 * * 1-5', 'dashboards.cron.update_user_attendance', '>> /root/tabspace-server/cron_logs/update_user_attendance.log'),   
+    ('0 0 * * 6', 'lectures.cron.update_no_today_lectures', '>> /root/tabspace-server/cron_logs/update_no_today_lectures.log'),   
+    ('1 0 * * *', 'dashboards.cron.update_user_notifications', '>> /root/tabspace-server/cron_logs/update_user_notifications.log'),   
 ]
 
 
