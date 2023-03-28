@@ -101,7 +101,8 @@ class KakaoRegisterView(APIView) :
     
     def post(self, request):
                     
-        kakao_id = kakao_access(request)   
+        # kakao_id = kakao_access(request)   
+        kakao_id = 23456 
         
                    
         if not 'realname' in request.data:
@@ -173,11 +174,12 @@ class KakaoRegisterView(APIView) :
                     for homework in Homework.objects.all().order_by('id'):
                         Submission.objects.create(dashboard=dashboard, homework=homework)
                     
-                   
                     user.last_login = timezone.now()
                     user.save()
-                    login(user) 
-                    return Response(data=serializer.validated_data, status=status.HTTP_201_CREATED)
+                    # login(user) 
+                    # return Response(data=serializer.validated_data, status=status.HTTP_201_CREATED)
+                    return login(user)
+                    
                 elif serializer.validated_data['realname'] != req_secret.master: 
                     return Response(data='key user unmatched', status=status.HTTP_400_BAD_REQUEST)
                 elif serializer.validated_data['phone'] != req_secret.phone: 
