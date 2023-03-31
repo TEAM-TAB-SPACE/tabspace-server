@@ -195,7 +195,6 @@ class CookieTokenRefreshSerializer(jwt_serializers.TokenRefreshSerializer):
 
     def validate(self, attrs):
         attrs['refresh'] = self.context['request'].COOKIES.get('refresh')
-        print(attrs['refresh'])
         if attrs['refresh']:
             return super().validate(attrs)
         else:
@@ -282,25 +281,18 @@ class GuestLoginView(APIView) :
                     elif int(day) == now-1 :
                         attendance += '0'
                     else:
-                        attendance += random.choice(['1','1','1','1','1','0'])
+                        attendance += random.choice(['1','1','1','1','0'])
                 elif int(day) >= now :
                     break
             attendence_wo_holiday = attendance.replace('h','')
             attendence_wo_holiday = list(attendence_wo_holiday)
             lectures = Lecture.objects.all()
             lecture_dates = lectures.distinct().values_list('date', flat=True)
-            print(lecture_dates) 
             true_attendence_index = [i for i in range(0,len(attendence_wo_holiday)) if attendence_wo_holiday[i] == '1']
             true_lecture_dates = [lecture_dates[i] for i in true_attendence_index]
             true_lectures = Lecture.objects.filter(date__in=true_lecture_dates)
-            print(true_lecture_dates)
-            print(true_lectures)
             lecture_room = LectureRoom.objects.filter(lecture__in = true_lectures)
-            print(lecture_room)
-            lecture_room.update(completed = True, progress = 100)
-            
-        # print(attendance)    
-        
+            lecture_room.update(completed = True, progress = 100)      
         
         Dashboard.objects.create(user=user, attendance=attendance, notifications='')  ##유저 대시보드 생성
         
@@ -309,6 +301,7 @@ class GuestLoginView(APIView) :
         dashboard.notifications = msg 
         dashboard.save()
         
+        lecture_room = LectureRoom.objects.filter(user=user)
         import math 
         for lecture_category in LectureCategory.objects.all().order_by('id'):
             lectures = Lecture.objects.filter(category = lecture_category)
