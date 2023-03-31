@@ -1,13 +1,7 @@
-from django.shortcuts import render
 from . import serializers
-import pandas as pd
-import random
-from django.http import HttpResponse, Http404
 from rest_framework.views    import APIView
 from rest_framework.response import Response
 from rest_framework import exceptions, decorators, permissions, status
-from datetime import datetime
-import requests
 from dateutil.relativedelta import *
 from lectures.models import Lecture
 from lectures.serializers import DashboardLectureSerializer

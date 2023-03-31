@@ -14,7 +14,6 @@ from dashboards.models import Dashboard
 import boto3
 from config import settings
 from users.models import User
-from django.db import transaction
 
 @decorators.permission_classes([permissions.IsAuthenticated])
 class SubmissionView(APIView):

@@ -27,7 +27,7 @@ BASE_URL = secrets["base_url"]
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 STATIC_ROOT = os.path.join(BASE_DIR, 'static') 
-ALLOWED_HOSTS = ['tab.tabspace.site','tabspace.site','admin.tabspace.site']
+ALLOWED_HOSTS = ['tab.tabspace.site','tabspace.site','admin.tabspace.site', '127.0.0.1']
 
 
 # Application definition

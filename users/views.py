@@ -18,6 +18,9 @@ from dashboards.models import Dashboard, UserGrowth
 from homeworks.models import Homework, Submission
 from django.contrib.auth import authenticate
 from weekdays.models import Weekday
+from datetime import datetime
+from .func import update_user_notifications, submit_homeworks
+from django.db.models import Max, Min, Avg
 
 
 def get_tokens_for_user(user):
@@ -101,10 +104,8 @@ class KakaoRegisterView(APIView) :
     
     def post(self, request):
                     
-        # kakao_id = kakao_access(request)   
-        kakao_id = 23456 
-        
-                   
+        kakao_id = kakao_access(request)  
+    
         if not 'realname' in request.data:
             try:
                 User.objects.get(username='1'+str(kakao_id))
@@ -123,7 +124,6 @@ class KakaoRegisterView(APIView) :
           
             return login(user) 
         except User.DoesNotExist: 
-            from datetime import datetime
               
             request_data_copy = request.data.copy()            
             request_data_copy['username'] = '1'+str(kakao_id)                 
@@ -162,12 +162,9 @@ class KakaoRegisterView(APIView) :
                     
                     Dashboard.objects.create(user=user, attendance=attendance, notifications='탭스페이스 입과를 환경합니다 (12) 오늘부터 탭탭이와 달려봐요 (6)')  ##유저 대시보드 생성
                     
-                    
-                    
                     for lecture in Lecture.objects.all().order_by('id'):
                         LectureRoom.objects.create(user=user, lecture=lecture)
-                    
-                    
+                                        
                     dashboard = Dashboard.objects.get(user_id = user_id)
                     for lecture_category in LectureCategory.objects.all().order_by('id'):
                         UserGrowth.objects.create(lecture_category=lecture_category, dashboard=dashboard)
@@ -204,6 +201,133 @@ class CookieTokenRefreshSerializer(jwt_serializers.TokenRefreshSerializer):
         else:
             raise jwt_exceptions.InvalidToken(
                 'No valid token found in cookie \'refresh\'')
+            
+import random            
+class GuestLoginView(APIView) :
+    
+    def post(self, request):
+        
+        if not 'mode' in request.data:
+            return Response(data='mode is required', status=status.HTTP_400_BAD_REQUEST)
+        
+        latest_username_num = User.objects.latest('date_joined').username[-3:]
+        username_num = int(latest_username_num) + 1
+        username_num = '0'*(3 - len(str(username_num))) + str(username_num)
+        username = f'guest{username_num}'
+        
+        if request.data['mode'] == 1:   #루피
+            mode = 1
+            User.objects.create(username=username, realname='모범생루피')  ##모범생 유저 생성        
+
+        elif request.data['mode'] == 2:   #뽀로로   
+            mode = 2
+            User.objects.create(username=username, realname='노는게제일좋은뽀로로')  ##불량 유저 생성  
+
+                    
+        ##개강일 이후 가입할 경우를 위한 이전 출석에 대한 처리
+
+        this_month_weekdays = Weekday.objects.last()
+        weekdays = this_month_weekdays.days.split(',')
+        holidays = this_month_weekdays.korean_holidays.split(',')    
+        
+        user = User.objects.get(username=username)
+        user_id = user.id
+        realname = user.realname
+        
+        for lecture in Lecture.objects.all().order_by('id'):
+            LectureRoom.objects.create(user=user, lecture=lecture)   
+        
+        
+        now = int(datetime.now().strftime('%d')) 
+        
+        if now == 1:           #오늘이 1일 일 때
+            attendance = ''    
+            Dashboard.objects.create(user=user, attendance=attendance, notifications='탭스페이스 입과를 환경합니다 (12) 오늘부터 탭탭이와 달려봐요 (6)')  ##유저 대시보드 생성                               
+            dashboard = Dashboard.objects.get(user_id = user_id)
+            for lecture_category in LectureCategory.objects.all().order_by('id'):
+                UserGrowth.objects.create(lecture_category=lecture_category, dashboard=dashboard)
+            for homework in Homework.objects.all().order_by('id'):
+                Submission.objects.create(dashboard=dashboard, homework=homework)
+            
+            user.last_login = timezone.now()
+            user.save()
+            # login(user) 
+            # return Response(data=serializer.validated_data, status=status.HTTP_201_CREATED)
+            return login(user)
+        
+        today_lecture = Lecture.objects.filter(today_lecture = 1).aggregate(id=Min('id'))
+        today_lecture_id = today_lecture['id']
+        lecture_room = LectureRoom.objects.filter(user=user)
+        
+        attendance = ''
+        if mode == 1:
+            for day in weekdays:
+                if int(day) < now :
+                    if day in holidays:
+                        attendance += 'h'
+                    else:
+                        attendance += '1'
+                elif int(day) >= now :
+                    break
+            lecture_room.filter(lecture_id__lt = today_lecture_id).update(completed = True, progress = 100)
+            last_lecture_room = lecture_room.last()
+            last_lecture_room.playtime = 1
+            last_lecture_room.save()
+            
+        elif mode == 2:
+            for day in weekdays:
+                if int(day) < now :
+                    if day in holidays:
+                        attendance += 'h'
+                    elif int(day) == now-1 :
+                        attendance += '0'
+                    else:
+                        attendance += random.choice(['1','1','1','1','1','0'])
+                elif int(day) >= now :
+                    break
+            attendence_wo_holiday = attendance.replace('h','')
+            attendence_wo_holiday = list(attendence_wo_holiday)
+            lectures = Lecture.objects.all()
+            lecture_dates = lectures.distinct().values_list('date', flat=True)
+            print(lecture_dates) 
+            true_attendence_index = [i for i in range(0,len(attendence_wo_holiday)) if attendence_wo_holiday[i] == '1']
+            true_lecture_dates = [lecture_dates[i] for i in true_attendence_index]
+            true_lectures = Lecture.objects.filter(date__in=true_lecture_dates)
+            print(true_lecture_dates)
+            print(true_lectures)
+            lecture_room = LectureRoom.objects.filter(lecture__in = true_lectures)
+            print(lecture_room)
+            lecture_room.update(completed = True, progress = 100)
+            
+        # print(attendance)    
+        
+        
+        Dashboard.objects.create(user=user, attendance=attendance, notifications='')  ##유저 대시보드 생성
+        
+        msg = update_user_notifications(user_id, realname)
+        dashboard = Dashboard.objects.get(user_id=user_id)
+        dashboard.notifications = msg 
+        dashboard.save()
+        
+        import math 
+        for lecture_category in LectureCategory.objects.all().order_by('id'):
+            lectures = Lecture.objects.filter(category = lecture_category)
+            ability = math.ceil(100*len(lecture_room.filter(completed=1, lecture__in = lectures))/len(lectures))
+            UserGrowth.objects.create(lecture_category=lecture_category, dashboard=dashboard, ability=ability)
+        for homework in Homework.objects.all().order_by('id'):
+            Submission.objects.create(dashboard=dashboard, homework=homework)
+        if mode == 1:
+            submission_id = Submission.objects.get(dashboard=dashboard, homework_id=7).id
+            submit_homeworks(user_id, submission_id)
+        user.last_login = timezone.now()
+        user.save()
+        # login(user) 
+        # return Response(data=serializer.validated_data, status=status.HTTP_201_CREATED)
+        return login(user)
+        
+
+                
+            
 
 class CookieTokenRefreshView(jwt_views.TokenRefreshView):
     serializer_class = CookieTokenRefreshSerializer
@@ -225,6 +349,7 @@ class CookieTokenRefreshView(jwt_views.TokenRefreshView):
             # return response
         # response["X-CSRFToken"] = request.COOKIES.get("csrftoken")
         return super().finalize_response(request, response, *args, **kwargs)
+    
     
                    
 @decorators.permission_classes([permissions.IsAuthenticated])
