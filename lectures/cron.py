@@ -48,15 +48,17 @@ def update_monthly_lectures():
 
     response = requests.get(url, params=params)
     if response.status_code == 200:
-        response = requests.get(url, params=params).json()
         try:
-            holidays_data = response['response']['body']['items']['item']
-            for holiday in holidays_data:
-                holidays.append(str(holiday['locdate']))
+            response = requests.get(url, params=params).json()
+            try:
+                holidays_data = response['response']['body']['items']['item']
+                for holiday in holidays_data:
+                    holidays.append(str(holiday['locdate']))
+            except:
+                holidays_data = response['response']['body']['items']['item']
+                holidays.append(str(holidays_data['locdate']))
         except:
-            holidays_data = response['response']['body']['items']['item']
-            holidays.append(str(holidays_data['locdate']))
-    
+            holidays = []
 
 
     next_month = datetime(this_year, this_month, 1) + relativedelta(months=1)
@@ -80,16 +82,19 @@ def update_monthly_lectures():
                 days.append(day_temp)
                 
     # for weekdays app
-    weekdays = weekdays[:-1]
+    weekdays = weekdays[:-1] #, 제거
     
     holidays2 = ''
-    for holiday in holidays:
-        
-        if holiday[-2] == '0':
-            holidays2 += f'{holiday[-1]},'
-        else:
-            holidays2 += f'{holiday[-2:]},'
-    holidays2 = holidays2[:-1]
+    try:
+        for holiday in holidays:
+            
+            if holiday[-2] == '0':
+                holidays2 += f'{holiday[-1]},'
+            else:
+                holidays2 += f'{holiday[-2:]},'
+        holidays2 = holidays2[:-1]
+    except:
+        holidays2 = ''
     
     weekday = Weekday.objects.last()
     weekday.month=this_month
