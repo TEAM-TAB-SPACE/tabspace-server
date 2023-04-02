@@ -44,7 +44,7 @@ def update_monthly_lectures():
         m = str(this_month)
     holidays = []
     url = 'http://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/getRestDeInfo?_type=json'
-    params ={'serviceKey' : settings["KOREAN_API_KEY"], 'pageNo' : '1', 'numOfRows' : '10', 'solYear' : str(this_year), 'solMonth' : m }
+    params ={'serviceKey' : settings.KOREAN_API_KEY, 'pageNo' : '1', 'numOfRows' : '10', 'solYear' : str(this_year), 'solMonth' : m }
 
     response = requests.get(url, params=params)
     if response.status_code == 200:
