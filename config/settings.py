@@ -272,3 +272,72 @@ AWS_S3_OBJECT_PARAMETERS = {
 }
 DEFAULT_FILE_STORAGE = 'config.utils.CustomS3Boto3Storage'
 # MEDIA_ROOT = os.path.join(BASE_DIR, 'path/to/store/my/files/')
+
+
+#쿼리기록
+LOGGING = {
+    'disable_existing_loggers': False,
+    'version': 1,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+    'formatters': {
+        'verbose': {
+            'format': '{asctime} {levelname} {message}',
+            'style': '{'
+        },
+        'standard': {
+            'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
+        },
+        'django.server': {
+            '()': 'django.utils.log.ServerFormatter',
+            'format': '[{server_time}] {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'file_db': {
+            'level'     : 'DEBUG',   
+            'class'     : 'logging.FileHandler',
+            'filename'  : BASE_DIR /'query.log',
+            'formatter' : 'verbose',
+            'filters': ['require_debug_true'],
+        },
+        'file_server': {
+            'level': 'INFO',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': BASE_DIR / 'debug.log',
+            'maxBytes': 1024*1024*5,  # 5 MB
+            'backupCount': 5,
+            'formatter': 'standard',
+            'filters': ['require_debug_false'],
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file_server'],
+            'level': 'INFO',
+        },
+        'django.db.backends': {
+            'handlers' : ['file_db'],
+            'level'    : 'DEBUG',
+            'propagate': False,
+        },
+    },
+}
+
+# Cache
+# CACHES = {  
+#     "default": {
+#         "BACKEND": "django_redis.cache.RedisCache",
+#         "LOCATION": "redis://127.0.0.1:6379/2", # 2번 DB
+#         "OPTIONS": {
+#             "CLIENT_CLASS": "django_redis.client.DefaultClient",
+#         }
+#     }
+# }

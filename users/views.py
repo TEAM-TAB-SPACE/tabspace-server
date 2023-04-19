@@ -1,13 +1,11 @@
 from . import serializers
 import requests
 from .models import User
-# from django.contrib.auth import login as auth_login, logout as auth_logout
 from rest_framework.views    import APIView
 from rest_framework.response import Response
 from rest_framework import exceptions, decorators, permissions, status
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt import views as jwt_views, serializers as jwt_serializers, exceptions as jwt_exceptions
-# from django.conf import settings
 from config import settings
 from django.utils import timezone
 from secretkeys.models import SecretKey
@@ -292,7 +290,10 @@ class GuestLoginView(APIView) :
             true_lecture_dates = [lecture_dates[i] for i in true_attendence_index]
             true_lectures = Lecture.objects.filter(date__in=true_lecture_dates)
             lecture_room = LectureRoom.objects.filter(lecture__in = true_lectures)
-            lecture_room.update(completed = True, progress = 100)      
+            lecture_room.update(completed = True, progress = 100)  
+            last_lecture_room = lecture_room.last()
+            last_lecture_room.playtime = 1
+            last_lecture_room.save()    
         
         Dashboard.objects.create(user=user, attendance=attendance, notifications='')  ##유저 대시보드 생성
         

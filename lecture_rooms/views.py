@@ -12,17 +12,23 @@ import requests
 from dateutil.relativedelta import *
 from dashboards.models import Dashboard, UserGrowth
 from lectures.models import Lecture
+from django.core.cache import cache
 
 
-
+           
+import time
 @decorators.permission_classes([permissions.IsAuthenticated])
 class LectureRoomsView(APIView):
     def get(self, request):
         try:
             user_id = request.user.id
+            # user_id = 27
+             
             lecture_rooms = LectureRoom.objects.filter(user=user_id)
             serializer = serializers.LectureRoomsSerializer(lecture_rooms, many=True)
+             
             return Response(status=status.HTTP_200_OK,data=serializer.data)
+           
         except LectureRoom.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND,data='This LecureRoom does not exist')
         

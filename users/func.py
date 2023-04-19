@@ -37,33 +37,35 @@ def update_user_notifications(user_id, realname):
     today = today[-2:]
     today = str(int(today))
     msg = []
-    # 개강알림
-    if today == weeks[1][0]:
-       msg.append('오늘은 탭스페이스 1기 프론트엔드 과정 개강일입니다 (12), 이제부터 탭탭이와 함께 달려보아요 ! (1)') 
-       msg = ','.join(msg)      
-       return msg
-    # 종강알림
-    if today == weeks[week_num[-1]][-1]:
-        msg.append('오늘은 탭스페이스 1기 프론트엔드 과정 종강일입니다 (12), 그 동안 고생 많으셨습니다 ! 강의평가도 참여 부탁드려요 (7)')   
-        msg = ','.join(msg)    
-        return msg
-    #공휴일일 때 알림
-    if today in holidays:
-        msg.append('탭탭이와 함께하는 즐거운 공휴일 (5), 공휴일에는 오늘의 강의가 없어요 (3), 완료하지 못한 강의와 숙제가 있다면 탭탭이와 함께 도전 (6)')
-        msg = ','.join(msg)
-        return msg
-    #주말일 때 알림
-    if datetime(this_year,this_month,int(today)).weekday() in [5,6]:
-        msg.append('탭탭이와 함께하는 즐거운 공휴일 (5), 주말에는 오늘의 강의가 없어요 (3), 완료하지 못한 강의와 숙제가 있다면 탭탭이와 함께 도전 (6)')
-        msg = ','.join(msg)
-        return msg
     
-    #개인알림
-    
-    active_lectures = Lecture.objects.filter(active_lecture = True)
-    today_lectures = Lecture.objects.filter(today_lecture = True)
-    dashboard = Dashboard.objects.filter(user_id = user_id)
     try:
+        # 개강알림
+        if today == weeks[1][0]:
+            msg.append('오늘은 탭스페이스 1기 프론트엔드 과정 개강일입니다 (12), 이제부터 탭탭이와 함께 달려보아요 ! (1)') 
+            msg = ','.join(msg)      
+            return msg
+        # 종강알림
+        if today == weeks[week_num[-1]][-1]:
+            msg.append('오늘은 탭스페이스 1기 프론트엔드 과정 종강일입니다 (12), 그 동안 고생 많으셨습니다 ! 강의평가도 참여 부탁드려요 (7)')   
+            msg = ','.join(msg)    
+            return msg
+        #공휴일일 때 알림
+        if today in holidays:
+            msg.append('탭탭이와 함께하는 즐거운 공휴일 (5), 공휴일에는 오늘의 강의가 없어요 (3), 완료하지 못한 강의와 숙제가 있다면 탭탭이와 함께 도전 (6)')
+            msg = ','.join(msg)
+            return msg
+        #주말일 때 알림
+        if datetime(this_year,this_month,int(today)).weekday() in [5,6]:
+            msg.append('탭탭이와 함께하는 즐거운 공휴일 (5), 주말에는 오늘의 강의가 없어요 (3), 완료하지 못한 강의와 숙제가 있다면 탭탭이와 함께 도전 (6)')
+            msg = ','.join(msg)
+            return msg
+        
+        #개인알림
+        
+        active_lectures = Lecture.objects.filter(active_lecture = True)
+        today_lectures = Lecture.objects.filter(today_lecture = True)
+        dashboard = Dashboard.objects.get(user_id = user_id)
+        
         msg = []
         user_name = realname
         
@@ -83,7 +85,7 @@ def update_user_notifications(user_id, realname):
         
         #강의 수강 독려 알림 
         try:      
-            uncompleted_lecture_rooms = LectureRoom.objects.filter(user=user_name, lecture__in = active_lectures, completed = False)
+            uncompleted_lecture_rooms = LectureRoom.objects.filter(user=user_id, lecture__in = active_lectures, completed = False)
             if len(uncompleted_lecture_rooms) > len(today_lectures):
                 msg.append('오늘은 밀린 강의를 청소해 볼까요 ? 마음이 한결 가벼워질거에요 (4)') 
         except LectureRoom.DoesNotExist:
@@ -98,11 +100,11 @@ def update_user_notifications(user_id, realname):
             
         if today in weeks[week_num[2]] : #셋째주
             msg.append('이제는 과제를 시작해야할 때 (3)')
-          
+            
                 
         elif today in weeks[week_num[-1]] : #마지막주
             msg.append('마지막 선물로 탭탭이에게 과제를 제출해 주세요 (4)')
-           
+            
                 
         elif today in weeks[week_num[-2]] : #넷째주
             msg.append('이제는 정말 과제를 시작해야할 때 (3)')
