@@ -319,10 +319,6 @@ class GuestLoginView(APIView) :
         # return Response(data=serializer.validated_data, status=status.HTTP_201_CREATED)
         return login(user)
         
-
-                
-            
-
 class CookieTokenRefreshView(jwt_views.TokenRefreshView):
     serializer_class = CookieTokenRefreshSerializer
 

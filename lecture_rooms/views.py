@@ -52,7 +52,7 @@ class LectureRoomsView(APIView):
             copy_data = request.data.copy()
             
             if ('playtime' in request.data) and ('endtime' in request.data):
-                difference = copy_data['endtime'] - lecture_room.playtime
+                difference = copy_data['playtime'] - lecture_room.playtime
                 if copy_data['playtime'] > 0 and copy_data['endtime'] > lecture_room.playtime:               
                     copy_data['playtime'] = lecture_room.playtime + difference          #누적재생시간에 시간차를 합산 함
                 else:
