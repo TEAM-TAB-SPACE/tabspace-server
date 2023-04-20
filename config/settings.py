@@ -27,7 +27,7 @@ BASE_URL = secrets["base_url"]
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 STATIC_ROOT = os.path.join(BASE_DIR, 'static') 
-ALLOWED_HOSTS = ['tab.tabspace.site','tabspace.site','admin.tabspace.site', '127.0.0.1']
+ALLOWED_HOSTS = ['tab.tabspace.site','tabspace.site','admin.tabspace.site', 'dev.tabspace.site','127.0.0.1']
 
 
 # Application definition
@@ -236,7 +236,7 @@ SIMPLE_JWT = {
 }
 
 # CORS 관련 추가
-CORS_ORIGIN_WHITELIST = ['http://127.0.0.1:3000','http://localhost:3000','https://tab.tabspace.site', 'https://admin.tabspace.site']
+CORS_ORIGIN_WHITELIST = ['http://127.0.0.1:3000','http://localhost:3000','https://tab.tabspace.site', 'https://admin.tabspace.site', 'https://dev.tabspace.site']
 CORS_ALLOW_CREDENTIALS = True #쿠키가 cross-site HTTP 요청에 포함될 수 있다
 
 # CSRF_COOKIE_SECURE = True
