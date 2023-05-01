@@ -25,7 +25,7 @@
 
 시연영상:
 
-![탭스페이스_시연_480](https://user-images.githubusercontent.com/120891914/235434452-51be8770-97ef-418a-ae2e-014d72fb5c14.gif)
+![탭스페이스_시연영상_720 (2) (1)](https://user-images.githubusercontent.com/120891914/235436679-2297e91a-28ed-406d-8059-30eda87ec18b.gif)
 
 서버 아키텍처:
 ![image](https://user-images.githubusercontent.com/120891914/235428839-6124c0d5-0b51-449e-be0f-d2490ba98096.png)
