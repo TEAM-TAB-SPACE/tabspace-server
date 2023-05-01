@@ -24,6 +24,7 @@
 - 과제 제출/다운로드/삭제 구현(AWS S3)
 
 시연영상:
+![탭스페이스_시연영상_light](https://user-images.githubusercontent.com/120891914/235433716-7d29536b-bbfe-45aa-83fd-794b2d8f4b4d.gif)
 
 <img width="100%" src="https://ds3h3lok6dodu.cloudfront.net/video/탭스페이스_시연영상_light.gif"/>
 
