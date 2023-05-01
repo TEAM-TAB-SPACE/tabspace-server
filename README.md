@@ -3,6 +3,21 @@
 
 배포url: https://tab.tabspace.site
 
+기술스택: NEXT.js(프론트엔드) + Django(백엔드)
+장고 라이브러리: rest_framework, rest_framework_simplejwt, corsheaders, django_crontab, storages
+
+주요 구현 사항:
+·  오늘의 강의 기능 구현
+: 전체 강의 목록을 한 달 평일 수에 맞춰 스케줄링 자동화(서버 예약 작업 : 매달 1일 자정, 국경일 API 사용)
+: 오늘의 강의 상태 업데이트(서버 예약 작업: 평일 자정)
+
+·  학습관리 시스템(LMS) 구현
+: 강의 진도율 계산 알고리즘 구현
+: 강의 카테고리 별 강의 수강률 기반 능력 신장률 계산 알고리즘 구현 (오각형 그래프)
+: 출석률 계산 알고리즘 구현(오늘의 강의 모두 수강 시 출석/ 서버 예약 작업: 화-토 자정)
+
+·  과제 제출/다운로드/삭제 구현(AWS S3)
+
 시연영상:
 
 <img width="80%" src="https://ds3h3lok6dodu.cloudfront.net/video/%ED%83%AD%EC%8A%A4%ED%8E%98%EC%9D%B4%EC%8A%A4_%EC%8B%9C%EC%97%B0%EC%98%81%EC%83%81_720.gif"/>
