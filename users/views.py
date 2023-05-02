@@ -291,9 +291,12 @@ class GuestLoginView(APIView) :
             true_lectures = Lecture.objects.filter(date__in=true_lecture_dates)
             lecture_room = LectureRoom.objects.filter(lecture__in = true_lectures)
             lecture_room.update(completed = True, progress = 100)  
-            last_lecture_room = lecture_room.last()
-            last_lecture_room.playtime = 1
-            last_lecture_room.save()    
+            try:
+                last_lecture_room = lecture_room.last()
+                last_lecture_room.playtime = 1
+                last_lecture_room.save()    
+            except:
+                pass
         
         Dashboard.objects.create(user=user, attendance=attendance, notifications='')  ##유저 대시보드 생성
         
