@@ -4,6 +4,7 @@
 서비스배포url: https://tab.tabspace.site
 
 기술스택: NEXT.js(프론트엔드) + Django(백엔드)
+
 장고 라이브러리: rest_framework, rest_framework_simplejwt, corsheaders, django_crontab, storages
 
 주요 구현 사항:
